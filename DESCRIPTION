@@ -1,11 +1,14 @@
 Package: ACBalancing
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Approximate Covariate Balancing
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Yimin Dai
+Maintainer: Yimin Dai <yimindai1999@tamu.edu>
+Description: The R package ACBalancing implements several approximate balancing 
+  methods, such as the univariate approximate balancing method, the Mahalanobis
+  balancing method, and the hierarchically regularized entropy balancing method,
+  for estimating average treatment effects (ATE) or average treatment effects in 
+  controlled or treated groups (ATC or ATT).
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -14,3 +17,8 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 7.2.2
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
+Imports: 
+    Rcpp
