@@ -13,13 +13,10 @@ The R package ACBalancing implements several approximate balancing
   for estimating average treatment effects (ATE) or average treatment effects in 
   controlled or treated groups (ATC or ATT). It includes Mahalanobis balancing and high-dimensional Mahalanobis balancing method. 
 
-- `MB()` produces an estimate of ATE or ATC and ATT.
-- `hdMB()` produces an estimate of ATE or  ATC and ATT in high-dimensional data.
-
 
 ## Installation
 
-You can install the development version of MBalance from [GitHub](https://github.com/) with:
+You can install the development version of ACBalancing from [GitHub](https://github.com/) with:
 
 ``` r
 if (!require("devtools")){
