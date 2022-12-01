@@ -1,4 +1,4 @@
-#' @title Cholesky
+#' @title CholMB
 #' @description Function to decompose weighting matrix.
 #'
 #' @details
@@ -23,9 +23,8 @@
 #' @param group2 see Details. Default: NA.
 #' @param method a string that takes values in {"MB", "MB2"}, Default: 'MB'.
 #' @param dimension the dimension of covariate.
-#' @rdname Cholesky
-#' @export
-Cholesky <- function(x, treat, group1, group2 = NA, method = "MB", dimension) {
+#' @rdname CholMB
+CholMB <- function(x, treat, group1, group2 = NA, method = "MB", dimension) {
   data.matrix <- cbind(x, treat)
   group <- as.matrix(data.matrix[treat == group1, 1:dimension])
   group.num <- sum(treat == group1)
@@ -53,7 +52,7 @@ Cholesky <- function(x, treat, group1, group2 = NA, method = "MB", dimension) {
     }
   }
 
-  if (is.na(group2)) {
+  if (is.null(group2)) {
     mean.pop <- matrix(NA, 1, dimension)
     if (dimension == 1) {
       mean.pop <- mean(x)
@@ -81,7 +80,7 @@ Cholesky <- function(x, treat, group1, group2 = NA, method = "MB", dimension) {
 
   K <- solve(group.cov)
   Q <- chol(K)
-  x <- Q %*% t(group.se)
+  x <- tcrossprod(Q, group.se)
 
   return(x)
 }
