@@ -33,68 +33,99 @@
 #' candidate values for the degree of approximate covariate balance. The default
 #' is c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
 #'
-#' @param x covariates.
-#' @param treat treatment indicator vector.
+#' @param covariate covariates.
+#' @param treat treatment indicator.
 #' @param group1 see Details.
 #' @param group2 see Details, Default: NA.
-#' @param outcome outcome vector.
+#' @param outcome outcome.
+#' @param opti.method The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".
 #' @param method a string that takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: 'MB'.
-#' @param delta.space tuning parameter in balancing. See Details. Default: c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
+#' @param delta.space tuning parameter in balancing. See Details. Default: c(1e-1, 1e-2, 1e-3).
+#' @param convergence the convergence Default: 1000.
+#' @param rate
 #' @param iterations iteration time in optimization problem, Default: 1000.
 #'
 #' @return a MB object with the following attributes:
 #' \itemize{
 #' \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 #' \item{weight:}{ the estimated Mahalanobis balancing weight.}
-#' \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+#' \item{ASMD:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 #' \item{delta:}{ the tuning parameter we choose.}
 #' }
 #'
 #' @examples
-#' ## estimating ATE##
+#' # estimating ATE
 #' set.seed(0521)
 #' data <- si.data()
 #' result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB")
 #' result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, method = "MB")
 #'
-#' ## an estimate of ATE
+#' # an estimate of ATE
 #' result1$AT - result2$AT
 #'
-#' ## estimating ATC##
+#' # estimating ATC
 #' result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
 #'
-#' ## an estimate of ATC
+#' # an estimate of ATC
 #' result3$AT - mean(data$Y[data$Tr == 0])
 #'
 #' @rdname MB
 #' @export
-#'
-MB <- function(x, treat, group1, group2 = NA, outcome, method = "MB", delta.space = c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6), iterations = 1000) {
-  # data
-  stopifnot(method %in% c("MB", "MB2", "kernelMB"))
+MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "proximalC",
+               method = "MB", delta.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3), iterations = 1000,
+               convergence = 10^{-10}, rate = 0.0001) {
 
-  data.matrix <- cbind(x, treat, outcome)
-  dimension <- dim(x)[2]
-  sample.size <- dim(x)[1]
-  if (is.null(dimension)) {
-    dimension <- 1
-    sample.size <- sum(abs(x) >= 0)
+  # Initiazing input
+  covariate <- as.matrix(covariate)
+  treat <- as.vector(treat)
+  outcome <- as.vector(outcome)
+  delta.space <- as.vector(delta.space)
+
+  # Check the compatibility of covariate, treat and outcome
+  try(if (nrow(covariate) != length(treat)) stop("the sample size of covariate and treat are not the same!"))
+  try(if (nrow(covariate) != length(outcome)) stop("the sample size of covariate and treat are not the same!"))
+  try(if (length(treat) != length(outcome)) stop("the sample size of covariate and treat are not the same!"))
+
+  # Check the compatibility of group1/group2 and treat
+  try(if (length(group1) > 1) stop("the length of group1 should be one!"))
+  try(if (sum(treat == group1) == 0) stop("the sample size of treat = group1 is zero!"))
+  if(!is.null(group2)){
+    try(if (sum(treat == group2) == 0) stop("the sample size of treat = group2 is zero!"))
   }
+
+  # Initiaze delta.space and Check the compatibility of delta.space
+  delta.space <- unique(delta.space)
+  try(if (sum(delta.space >= 0) == 0) stop("all the value in delta.space is negative!"))
+
+  # Check the compatibility of method and opti.method
+  stopifnot(method %in% c("MB", "MB2", "kernelMB"))
+  stopifnot(opti.method %in% c("proximalC", "proximal", "BFGS"))
+
+  # Check the compatibility of iterations, convergence and rate
+  try(if (iterations <= 0) stop("iterations should be greater than zero!"))
+  try(if (convergence < 0) stop("convergence should be non-negative!"))
+  try(if (rate < 0) stop("rate should be non-negative!"))
+
+  # Initiazing information for data
+  data.matrix <- as.matrix(cbind(covariate, treat, outcome))
+  dimension <- dim(covariate)[2]
+  sample.size <- dim(covariate)[1]
   group1.number <- sum(treat == group1)
 
+  #
   if (method == "MB") {
-    solution <- Cholesky(x = x, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
+    x <- CholMB(x = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
   }
   if (method == "MB2") {
-    solution <- Cholesky(x = x, treat = treat, group1 = group1, group2 = group2, method = "MB2", dimension = dimension)
+    x <- CholMB(x = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB2", dimension = dimension)
   }
   if (method == "kernelMB") {
-    dimension <- dim(x)[1]
-    data <- matrix(NA, dim(x)[1], dim(x)[1])
-    data.temp <- matrix(NA, dim(x)[1], dim(x)[1])
+    dimension <- dim(covariate)[1]
+    data <- matrix(NA, dim(covariate)[1], dim(covariate)[1])
+    data.temp <- matrix(NA, dim(covariate)[1], dim(covariate)[1])
     for (i in 1:sample.size) {
       for (j in 1:sample.size) {
-        data.temp[i, j] <- sum((data.matrix[i, 1:dim(x)[2]] - data.matrix[j, 1:dim(x)[2]])^2)
+        data.temp[i, j] <- sum((data.matrix[i, 1:dim(covariate)[2]] - data.matrix[j, 1:dim(covariate)[2]])^2)
       }
     }
     median.scale <- median(data.temp)
@@ -103,40 +134,63 @@ MB <- function(x, treat, group1, group2 = NA, outcome, method = "MB", delta.spac
         data[i, j] <- exp(-data.temp[i, j] / median.scale)
       }
     }
-    solution <- Cholesky(x = x, treat = treat, group1 = group1, group2 = group2, method = "MB2", dimension = dimension)
+    x <- Cholesky(x = data, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
   }
-  x <- solution
 
-  # calculate the weights for group1
-  w <- rep(0, group1.number)
-  u1 <- rep(0, dimension)
+  # Set up space for saving weight and GMIM
   GMIM <- rep(NA, sum(delta.space > 0))
-  for (i in 1:sum(delta.space > 0)) {
-    Opti.func <- function(u) {
-      u1 <- t(x) %*% u
-      sum(exp(u1 - 1)) + sqrt(delta.space[i]) * norm(u, type = c("2"))
+  weight.space <- matrix(0, nrow = group1.number, ncol = length(delta.space))
+
+  # Calculate weight for each delta in delta.space
+  for (i in 1:length(delta.space)) {
+    eps <- 1000
+    beta <- as.vector(rep(0, dimension))
+
+    # Implementation of BFGS method
+    if (opti.method == "BFGS") {
+      Opti.func <- function(beta) {
+        sum(exp(t(x) %*% beta - 1)) + delta.space[i] * norm(beta, type = c("2"))
+      }
+      beta <- optim(par = beta, fn = Opti.func, method = "BFGS", control = list(abstol = 0, maxit = iterations))$par
     }
-    solution <- optim(par = u, fn = Opti.func, method = "BFGS", control = list(abstol = 0, maxit = iterations))
-    u.sol <- t(x) %*% solution$par
-    w <- exp(u.sol - 1)
+
+    # Implementation of proximal optimization method with R code
+    if (opti.method == "proximal") {
+      iterationtime = 0;
+      while (eps > convergence) {
+        beta_old <- beta
+        hessian <- solve(crossprod(t(x), t(x) * matrix(exp(crossprod(x, beta_old)), ncol(x), nrow(x))) + rate * diag(rep(1, nrow(x))))
+        vt <- beta - crossprod(t(hessian), crossprod(t(x), exp(crossprod(x, beta))))
+        beta <- soft(vt, delta.space[i])
+        fobj_old <- sum(exp(t(x) %*% beta_old)) + delta.space[i] * sqrt(sum(beta_old^2))
+        fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2))
+        eps <- abs(fobj_old - fobj_new)
+        iterationtime = iterationtime + 1
+        if(iterationtime >= 1000){
+          eps = 0
+        }
+      }
+    }
+
+    # Implementation of proximal optimization method with C++ code
+    if (opti.method == "proximalC") {
+      beta <- proximaloptim(X = x, rate = rate, lambda = delta.space[i], beta_start = beta, convergence = convergence, iteration = iterations)
+    }
+
+    # Calculate weight and balancing diagnostics
+    w <- exp(crossprod(x, beta))
     w <- w / sum(w)
-    GMIM[i] <- t(w) %*% t(x) %*% x %*% w
+    GMIM[i] <- sum(tcrossprod(t(w), x)^2)
+
+    # Save weight
+    weight.space[, i] <- w
   }
 
   # calculate the AT
   delta <- delta.space[rank(GMIM) == 1]
-  Opti.func <- function(u) {
-    u1 <- t(x) %*% u
-    sum(exp(u1 - 1)) + sqrt(delta) * norm(u, type = c("2"))
-  }
-  solution <- optim(par = u, fn = Opti.func, method = "BFGS", control = list(abstol = 0, maxit = iterations))
-  u.sol <- t(x) %*% solution$par
-  w <- exp(u.sol - 1)
-  w <- w / sum(w)
-  GMIM <- t(w) %*% t(x) %*% x %*% w
-
-  dimension <- dim(x)[1]
-  AT <- t(w) %*% outcome[treat == group1]
-  result <- list(AT = AT, weight = w, GMIM = GMIM, delta = delta, parameter = -solution$par)
+  GMIM <- min(GMIM)
+  weight <- weight.space[, rank(GMIM) == 1]
+  AT <- crossprod(weight, outcome[treat == group1])
+  result <- list(AT = AT, weight = weight, GMIM = GMIM, delta = delta, parameter = -beta)
   return(result)
 }
