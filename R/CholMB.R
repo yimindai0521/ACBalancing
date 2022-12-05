@@ -17,70 +17,43 @@
 #' \item This function is feasible when there are more than two groups.
 #' }
 #'
-#' @param x covariates.
+#' @param covariate covariate.
 #' @param treat treatment indicator vector.
 #' @param group1 see Details.
 #' @param group2 see Details. Default: NA.
 #' @param method a string that takes values in {"MB", "MB2"}, Default: 'MB'.
 #' @param dimension the dimension of covariate.
 #' @rdname CholMB
-CholMB <- function(x, treat, group1, group2 = NA, method = "MB", dimension) {
-  data.matrix <- cbind(x, treat)
-  group <- as.matrix(data.matrix[treat == group1, 1:dimension])
-  group.num <- sum(treat == group1)
-  group.col <- ncol(group)
-  group.row <- nrow(group)
-  if (is.null(group.col)) {
-    group.col <- 1
-    group.row <- sum(abs(group) >= 0)
-  }
-  group.cov <- matrix(0, group.col, group.col)
+CholMB <- function(covariate, treat, group1, group2 = NA, method = "MB") {
+
+  # Initiazing input
+  covariate <- as.matrix(covariate) # Matrixization x
+  dimension <- ncol(covariate) # Calculate the dimension of covariate
+  treat <- as.vector(treat) # Vectorization treat
+  covariate.group1 <- as.matrix(covariate[treat == group1, ]) # Select the covariate to be balanced
+  group.number <- sum(treat == group1) # Calculate the number of individual in treatment group
 
   if (method == "MB") {
-    for (i in 1:group.col) {
-      meanx <- sum(group[, i]) / group.row
-      group.cov[i, i] <- sum((group[, i] - meanx) * (group[, i] - meanx)) / (group.num - 1)
-    }
+    meanx <- colMeans(covariate)
+    var.group <- sqrt(colMeans((covariate - meanx)^2))
+    group.cov <- diag(var.group)
   }
   if (method == "MB2") {
-    for (i in 1:group.col) {
-      for (j in 1:group.col) {
-        meanx <- sum(group[, i]) / group.row
-        meany <- sum(group[, j]) / group.row
-        group.cov[i, j] <- sum((group[, i] - meanx) * (group[, j] - meany)) / (group.num - 1)
-      }
-    }
+    group.cov <- cov(covariate)
   }
 
+  mean.target <- matrix(NA, 1, dimension)
   if (is.null(group2)) {
-    mean.pop <- matrix(NA, 1, dimension)
-    if (dimension == 1) {
-      mean.pop <- mean(x)
-      group.se <- data.matrix[(treat == group1), 1] - mean.pop
-    } else {
-      mean.pop <- apply(data.matrix[, 1:dimension], 2, mean)
-      group.se <- data.matrix[(treat == group1), 1:dimension]
-      for (i in 1:sum(treat == group1)) {
-        group.se[i, ] <- group.se[i, ] - mean.pop
-      }
-    }
+      mean.target <- colMeans(covariate)
+      covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
   } else {
-    mean.pop <- matrix(NA, 1, dimension)
-    if (dimension == 1) {
-      mean.pop <- mean(x[treat == group2])
-      group.se <- data.matrix[(treat == group1), 1] - mean.pop
-    } else {
-      mean.pop <- apply(data.matrix[treat == group2, 1:dimension], 2, mean)
-      group.se <- data.matrix[(treat == group1), 1:dimension]
-      for (i in 1:sum(treat == group1)) {
-        group.se[i, ] <- group.se[i, ] - mean.pop
-      }
-    }
+      mean.target <- colMeans(covariate[treat == group2, ])
+      covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
   }
 
   K <- solve(group.cov)
   Q <- chol(K)
-  x <- tcrossprod(Q, group.se)
+  x <- tcrossprod(Q, covariate.group1)
 
   return(x)
 }
