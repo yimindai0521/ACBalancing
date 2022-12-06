@@ -2,8 +2,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
-//'@import RcppArmadillo
-//'@export
 // [[Rcpp::export]]
 arma::colvec soft_c(const arma::colvec& beta, double lambda){
   // Your function code goes here
@@ -15,8 +13,6 @@ arma::colvec soft_c(const arma::colvec& beta, double lambda){
   }
 }
 
-//'@import RcppArmadillo
-//'@export
 // [[Rcpp::export]]
 double objvalue(const arma::mat& X, const arma::colvec& beta, double lambda){
   // Your function code goes here
@@ -24,8 +20,6 @@ double objvalue(const arma::mat& X, const arma::colvec& beta, double lambda){
   return fobject;
 }
 
-//'@import RcppArmadillo
-//'@export
 // [[Rcpp::export]]
 arma::colvec proximaloptim(const arma::mat& X, double rate, double lambda, arma::colvec& beta_start, double convergence, int iteration){
   // Your function code goes here

@@ -6,11 +6,11 @@
 #'
 #' @inheritParams MB
 #'
-#' @param alpha.space
-#' @param cv.fold
-#' @param second.moment
-#' @param third.moment
-#' @param interact
+#' @param alpha.space alpha.space is
+#' @param cv.fold cv.fold is
+#' @param second.moment second.moment is
+#' @param third.moment third.moment is
+#' @param interact interact is
 #'
 #' @return a HRB object with the following attributes:
 #' \itemize{
@@ -22,6 +22,7 @@
 #' }
 #'
 #' @rdname HRB
+#'
 #' @export
 #'
 #' @examples

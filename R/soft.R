@@ -2,6 +2,7 @@
 #'
 #' @param vt
 #' @param lambda
+#' @param norm
 #'
 #' @return
 #'

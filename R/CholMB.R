@@ -22,7 +22,6 @@
 #' @param group1 see Details.
 #' @param group2 see Details. Default: NA.
 #' @param method a string that takes values in {"MB", "MB2"}, Default: 'MB'.
-#' @param dimension the dimension of covariate.
 #' @rdname CholMB
 CholMB <- function(covariate, treat, group1, group2 = NA, method = "MB") {
 

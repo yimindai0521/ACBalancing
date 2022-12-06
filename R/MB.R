@@ -30,19 +30,19 @@
 #' }
 #'
 #' \code{delta.space} grid of values for the tuning parameter, a vector of
-#' candidate values for the degree of approximate covariate balance. The default
-#' is c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
+#' candidate values for the degree of multivariate approximate covariate balance.
+#' The default is c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
 #'
 #' @param covariate covariates.
 #' @param treat treatment indicator.
 #' @param group1 see Details.
-#' @param group2 see Details, Default: NA.
+#' @param group2 see Details, Default: NULL.
 #' @param outcome outcome.
 #' @param opti.method The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".
-#' @param method a string that takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: 'MB'.
-#' @param delta.space tuning parameter in balancing. See Details. Default: c(1e-1, 1e-2, 1e-3).
-#' @param convergence the convergence Default: 1000.
-#' @param rate
+#' @param method Method to calculate weighting matrix. It should takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: "MB".
+#' @param delta.space tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
+#' @param convergence Criteria for determining convergence of optimization problems. Default: 10^{-10}.
+#' @param rate the parameter in Tikhonov-regularized Newton update.
 #' @param iterations iteration time in optimization problem, Default: 1000.
 #'
 #' @return a MB object with the following attributes:
@@ -57,8 +57,8 @@
 #' # estimating ATE
 #' set.seed(0521)
 #' data <- si.data()
-#' result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB")
-#' result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, method = "MB")
+#' result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
+#' result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
 #'
 #' # an estimate of ATE
 #' result1$AT - result2$AT
@@ -70,10 +70,11 @@
 #' result3$AT - mean(data$Y[data$Tr == 0])
 #'
 #' @rdname MB
+#' @importFrom stats optim cov dist median rnorm runif
 #' @export
-MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "proximalC",
-               method = "MB", delta.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3), iterations = 1000,
-               convergence = 10^{-10}, rate = 0.0001) {
+MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c("proximalC", "proximal", "BFGS"),
+               method = c("MB", "MB2", "kernelMB"), delta.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3), iterations = 1000,
+               convergence = 10^{-8}, rate = 10) {
 
   # Initiazing input
   covariate <- as.matrix(covariate)
@@ -107,67 +108,61 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "
   try(if (rate < 0) stop("rate should be non-negative!"))
 
   # Initiazing information for data
-  data.matrix <- as.matrix(cbind(covariate, treat, outcome))
-  dimension <- dim(covariate)[2]
-  sample.size <- dim(covariate)[1]
-  group1.number <- sum(treat == group1)
+  data.matrix <- as.matrix(cbind(covariate, treat, outcome)) # Save the covariate and treat in the same matrix
+  dimension <- dim(covariate)[2] # Calculate the dimension of covariate
+  sample.size <- dim(covariate)[1] # Calculate the sample size of covariate
+  group1.number <- sum(treat == group1) # Calculate the number of covariate
 
-  #
+  # Calculate the scaled covariate
+  method <- match.arg(method)
   if (method == "MB") {
-    x <- CholMB(x = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
+    x <- CholMB(covariate = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB") # Calculate the scaled covariate using diagonal matrix
   }
   if (method == "MB2") {
-    x <- CholMB(x = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB2", dimension = dimension)
+    x <- CholMB(covariate = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB2") # Calculate the scaled covariate using covariance matrix
   }
   if (method == "kernelMB") {
-    dimension <- dim(covariate)[1]
-    data <- matrix(NA, dim(covariate)[1], dim(covariate)[1])
-    data.temp <- matrix(NA, dim(covariate)[1], dim(covariate)[1])
-    for (i in 1:sample.size) {
-      for (j in 1:sample.size) {
-        data.temp[i, j] <- sum((data.matrix[i, 1:dim(covariate)[2]] - data.matrix[j, 1:dim(covariate)[2]])^2)
-      }
-    }
-    median.scale <- median(data.temp)
-    for (i in 1:sample.size) {
-      for (j in 1:sample.size) {
-        data[i, j] <- exp(-data.temp[i, j] / median.scale)
-      }
-    }
-    x <- Cholesky(x = data, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
+    dimension <- dim(covariate)[1] # re-calculate the dimension
+    data <- matrix(NA, dim(covariate)[1], dim(covariate)[1]) # Open a space to save the new covariate
+    dist.matrix <- as.matrix(dist(covariate)) # Open a space to save distance matrix
+    median.scale <- median(dist.matrix) # Calculate the bandwidth for kernel function
+    covariate <- exp(-dist.matrix / median.scale) # Calculate the transformed covariate
+    x <- CholMB(covariate = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB") # Calculate the scaled covariate after transfromation using diagonal matrix
   }
 
-  # Set up space for saving weight and GMIM
+  # Set up space for saving weight, beta and GMIM
   GMIM <- rep(NA, sum(delta.space > 0))
+  beta.space <- matrix(0, nrow = dimension, ncol = length(delta.space))
   weight.space <- matrix(0, nrow = group1.number, ncol = length(delta.space))
 
   # Calculate weight for each delta in delta.space
   for (i in 1:length(delta.space)) {
-    eps <- 1000
-    beta <- as.vector(rep(0, dimension))
+    eps <- 1000 # initiazing eps
+    beta <- as.vector(rep(0, dimension)) # Set up a space to save the beta for each iteration
 
     # Implementation of BFGS method
+    opti.method <- match.arg(opti.method)
     if (opti.method == "BFGS") {
       Opti.func <- function(beta) {
-        sum(exp(t(x) %*% beta - 1)) + delta.space[i] * norm(beta, type = c("2"))
+        sum(exp(t(x) %*% beta - 1)) + delta.space[i] * norm(beta, type = c("2")) # Loss function to be optimized
       }
-      beta <- optim(par = beta, fn = Opti.func, method = "BFGS", control = list(abstol = 0, maxit = iterations))$par
+      beta <- optim(par = beta, fn = Opti.func, method = "BFGS", control = list(abstol = 0, maxit = iterations))$par # Using BFGS to optimize loss function
     }
 
     # Implementation of proximal optimization method with R code
     if (opti.method == "proximal") {
-      iterationtime = 0;
+      iterationtime = 0 # Initiazing iteration time
       while (eps > convergence) {
-        beta_old <- beta
-        hessian <- solve(crossprod(t(x), t(x) * matrix(exp(crossprod(x, beta_old)), ncol(x), nrow(x))) + rate * diag(rep(1, nrow(x))))
-        vt <- beta - crossprod(t(hessian), crossprod(t(x), exp(crossprod(x, beta))))
-        beta <- soft(vt, delta.space[i])
-        fobj_old <- sum(exp(t(x) %*% beta_old)) + delta.space[i] * sqrt(sum(beta_old^2))
-        fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2))
-        eps <- abs(fobj_old - fobj_new)
-        iterationtime = iterationtime + 1
-        if(iterationtime >= 1000){
-          eps = 0
+        beta_old <- beta # Save beta before iteration
+        hessian <- solve(crossprod(t(x), t(x) * matrix(exp(crossprod(x, beta_old)), ncol(x), nrow(x))) + rate * diag(rep(1, nrow(x)))) # Calculate modified Hessian Newton update with parameter lambda > 0
+        vt <- beta - crossprod(t(hessian), crossprod(t(x), exp(crossprod(x, beta)))) # Gradient step
+        beta <- soft(vt, delta.space[i]) # Proximal operator step
+        fobj_old <- sum(exp(t(x) %*% beta_old)) + delta.space[i] * sqrt(sum(beta_old^2)) # Calculate the value of function with beta_old
+        fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2)) # Calculate the value of function with beta
+        eps <- abs(fobj_old - fobj_new) # Calculate the difference of the value
+        iterationtime <- iterationtime + 1
+        if(iterationtime >= iterations){
+          eps = 0 # If the iterationtime is greater /equal to iterations, then stop optimization
         }
       }
     }
@@ -178,19 +173,20 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "
     }
 
     # Calculate weight and balancing diagnostics
-    w <- exp(crossprod(x, beta))
-    w <- w / sum(w)
-    GMIM[i] <- sum(tcrossprod(t(w), x)^2)
+    w <- exp(crossprod(x, beta)) # Calculate weight
+    w <- w / sum(w) # Normalize weight
+    GMIM[i] <- sum(tcrossprod(t(w), x)^2) # Calculate Generalized Mahalanobis Imbalance Measure
 
-    # Save weight
+    # Save weight and beta to corresponding space
+    beta.space[, i] <- beta
     weight.space[, i] <- w
   }
 
   # calculate the AT
-  delta <- delta.space[rank(GMIM) == 1]
-  GMIM <- min(GMIM)
-  weight <- weight.space[, rank(GMIM) == 1]
-  AT <- crossprod(weight, outcome[treat == group1])
-  result <- list(AT = AT, weight = weight, GMIM = GMIM, delta = delta, parameter = -beta)
+  delta <- as.vector(delta.space[which.min(GMIM)]) # Select the tuning parameter in loss function
+  GMIM <- min(GMIM) # Select GMIM
+  weight <- weight.space[, which.min(GMIM)] # Select weight for the corresponding parameter
+  AT <- crossprod(weight, outcome[treat == group1]) # Calculate average treatment effect in target group
+  result <- list(AT = AT, weight = as.vector(weight), GMIM = GMIM, delta = delta, parameter = as.vector(-beta)) # list the result and return
   return(result)
 }

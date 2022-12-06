@@ -4,55 +4,77 @@
 \alias{HRB}
 \title{Hierarchically Regularized Entropy Balancing}
 \usage{
-HRB(x, treat, group1, group2 = NA, outcome, iterations = 1000)
+HRB(
+  covariate,
+  treat,
+  group1,
+  group2 = NULL,
+  outcome,
+  alpha.space = c(0.1, 0.05, 0.01, 0.005, 0.001),
+  iterations = 1000,
+  convergence = 10^{
+     -10
+ },
+  cv.fold = 5,
+  second.moment = TRUE,
+  third.moment = TRUE,
+  interact = TRUE
+)
 }
 \arguments{
-\item{x}{covariates.}
+\item{covariate}{covariates.}
 
-\item{treat}{treatment indicator vector.}
+\item{treat}{treatment indicator.}
 
 \item{group1}{see Details.}
 
-\item{group2}{see Details, Default: NA.}
+\item{group2}{see Details, Default: NULL.}
 
-\item{outcome}{outcome vector.}
+\item{outcome}{outcome.}
+
+\item{alpha.space}{alpha.space is}
 
 \item{iterations}{iteration time in optimization problem, Default: 1000.}
+
+\item{convergence}{Criteria for determining convergence of optimization problems. Default: 10^{-10}.}
+
+\item{cv.fold}{cv.fold is}
+
+\item{second.moment}{second.moment is}
+
+\item{third.moment}{third.moment is}
+
+\item{interact}{interact is}
 }
 \value{
 a HRB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
-\item{weight:}{ the estimated Mahalanobis balancing weight.}
+\item{weight:}{ the estimated univariate balancing weight.}
 \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+\item{MAE:}{ Mean Absolute Error.}
+\item{alpha:}{ the tuning parameter we choose.}
 }
 }
 \description{
-Hierarchically Regularized Entropy Balancing expands the feature space
-by including higher-order terms (including interactions) of covariates
-and then achieves approximate balance on the expanded features.
-effect.
-}
-\details{
-\code{group1} and \code{group0}
-\itemize{
-\item To estimate \eqn{E(Y (1))} (average treatment effect for group 1),
-you need to set \code{group1} = 1 and ignore \code{group2}. Similarly,
-To estimate \eqn{E(Y (0))} (average treatment effect for group 0),
-you need to set \code{group1} = 0 and ignore \code{group2}.
-
-\item To estimate average treatment effect on the control group \eqn{E(Y (1) | T = 0)},
-you need to set \code{group1} = 1 and \code{group2} = 0. Similarly, To estimate
-average treatment effect on the treated group \eqn{E(Y (0) | T = 1)},
-you need to set \code{group1} = 0 and \code{group2} = 1.
-
-\item This function is feasible when there are more than two groups.
-}
+Hierarchically Regularized Entropy Balancing is a
+approximate balancing method that expands the feature space by including
+higher-order terms of covariates while imposes
+ridge penalties with a hierarchical structure on the higher-order terms.
 }
 \examples{
-## estimating ATE##
+# estimating ATE
 set.seed(0521)
 data <- si.data()
+result1 <- HRB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
+result2 <- HRB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
 
+# an estimate of ATE
+result1$AT - result2$AT
 
+# estimating ATC
+result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+
+# an estimate of ATC
+result3$AT - mean(data$Y[data$Tr == 0])
 }

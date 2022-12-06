@@ -19,32 +19,44 @@
 #' \item This function is feasible when there are more than two groups.
 #' }
 #'
-#' @inheritParams MB
-#'
 #' \code{delta.space} grid of values for the tuning parameter, a vector of
-#' candidate values for the degree of approximate covariate balance. The default
-#' is c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
+#' candidate values for the degree of approximate univariate covariate balance. The default
+#' is c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1).
 #'
+#' @inheritParams MB
+#' @param opti.method The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal"}. Default: "proximal".
+#' @param bootstrap.time
 #'
 #' @return a UB object with the following attributes:
 #' \itemize{
 #' \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
-#' \item{weight:}{ the estimated Mahalanobis balancing weight.}
+#' \item{weight:}{ the estimated univariate balancing weight.}
 #' \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 #' \item{delta:}{ the tuning parameter we choose.}
 #' }
 #'
-#' @examples
-#' ## estimating ATE##
-#' set.seed(0521)
-#' data <- si.data()
-#'
 #' @rdname UB
 #' @export
 #'
-UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "proximal",
+#' @examples
+#' # estimating ATE
+#' set.seed(0521)
+#' data <- si.data()
+#' result1 <- HRB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
+#' result2 <- HRB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+#'
+#' # an estimate of ATE
+#' result1$AT - result2$AT
+#'
+#' # estimating ATC
+#' result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+#'
+#' # an estimate of ATC
+#' result3$AT - mean(data$Y[data$Tr == 0])
+#'
+UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c("BFGS", "proximal"),
                delta.space = c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
-               iterations = 1000, convergence = 10^{-10}, rate = 0.0001, bootstrap.time = 1000) {
+               iterations = 1000, convergence = 10^{-8}, rate = 10, bootstrap.time = 1000) {
 
   # Initiazing input
   covariate <- as.matrix(covariate)
@@ -82,17 +94,19 @@ UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "
   dimension <- dim(covariate)[2]
   sample.size <- dim(covariate)[1]
   group1.number <- sum(treat == group1)
-  xMB <- CholMB(x = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB", dimension = dimension)
+  xMB <- CholMB(covariate = covariate, treat = treat, group1 = group1, group2 = group2, method = "MB")
 
   # Set up space for saving weight and GMIM
   weight.space <- matrix(0, nrow = group1.number, ncol = length(delta.space))
+  beta.space <- matrix(0, nrow = dimension, ncol = length(delta.space))
   GMIM <- matrix(0, nrow = bootstrap.time, ncol = length(delta.space))
   x <- t(covariate[treat == group1, ])
+
   # Calculate weight for each delta in delta.space
   for (i in 1:length(delta.space)) {
     eps <- 1000
     beta <- as.vector(rep(0, dimension))
-
+    opti.method <- match.arg(opti.method)
     # Implementation of BFGS method
     if (opti.method == "BFGS") {
       Opti.func <- function(beta) {
@@ -118,8 +132,13 @@ UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "
       }
     }
 
+    # Save result in corresponding space
+    beta.space[, i] <- beta
     weight <- exp(crossprod(x, beta))
     weight <- weight / sum(weight)
+
+    # Save weight
+    beta.space[, i] <- beta
     weight.space[, i] <- weight
 
     # Bootstrap to select tuning parameter
@@ -131,10 +150,11 @@ UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = "
 
   # calculate the AT
   meanGMIM <- colMeans(GMIM)
-  delta <- delta.space[rank(meanGMIM) == 1]
-  weight <- weight.space[, rank(meanGMIM) == 1]
+  delta <- delta.space[which.min(meanGMIM)]
+  beta <- as.vector(beta.space[, which.min(meanGMIM)])
+  weight <- weight.space[, which.min(meanGMIM)]
   GMIM <- sum(tcrossprod(t(weight), xMB)^2)
   AT <- crossprod(weight, outcome[treat == group1])
-  result <- list(AT = AT, weight = weight, GMIM = GMIM, delta = delta, parameter = -beta)
+  result <- list(AT = AT, weight = as.vector(weight), GMIM = GMIM, delta = delta, parameter = as.vector(-beta))
   return(result)
 }

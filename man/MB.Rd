@@ -5,39 +5,50 @@
 \title{Mahalanobis balancing}
 \usage{
 MB(
-  x,
+  covariate,
   treat,
   group1,
-  group2 = NA,
+  group2 = NULL,
   outcome,
-  method = "MB",
-  delta.space = c(0.1, 0.01, 0.001, 1e-04, 1e-05, 1e-06),
-  iterations = 1000
+  opti.method = c("proximalC", "proximal", "BFGS"),
+  method = c("MB", "MB2", "kernelMB"),
+  delta.space = c(0.1, 0.05, 0.01, 0.005, 0.001),
+  iterations = 1000,
+  convergence = 10^{
+     -8
+ },
+  rate = 10
 )
 }
 \arguments{
-\item{x}{covariates.}
+\item{covariate}{covariates.}
 
-\item{treat}{treatment indicator vector.}
+\item{treat}{treatment indicator.}
 
 \item{group1}{see Details.}
 
-\item{group2}{see Details, Default: NA.}
+\item{group2}{see Details, Default: NULL.}
 
-\item{outcome}{outcome vector.}
+\item{outcome}{outcome.}
 
-\item{method}{a string that takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: 'MB'.}
+\item{opti.method}{The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".}
 
-\item{delta.space}{tuning parameter in balancing. See Details. Default: c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).}
+\item{method}{Method to calculate weighting matrix. It should takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: "MB".}
+
+\item{delta.space}{tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).}
 
 \item{iterations}{iteration time in optimization problem, Default: 1000.}
+
+\item{convergence}{Criteria for determining convergence of optimization problems. Default: 10^{-10}.}
+
+\item{rate}{the parameter in Tikhonov-regularized Newton update.}
 }
 \value{
 a MB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 \item{weight:}{ the estimated Mahalanobis balancing weight.}
-\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+\item{ASMD:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 \item{delta:}{ the tuning parameter we choose.}
 }
 }
@@ -73,23 +84,23 @@ then we apply method "MB" to produce Mahalanobis balancing weights.
 }
 
 \code{delta.space} grid of values for the tuning parameter, a vector of
-candidate values for the degree of approximate covariate balance. The default
-is c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
+candidate values for the degree of multivariate approximate covariate balance.
+The default is c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
 }
 \examples{
-## estimating ATE##
+# estimating ATE
 set.seed(0521)
 data <- si.data()
-result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB")
-result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, method = "MB")
+result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
+result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
 
-## an estimate of ATE
+# an estimate of ATE
 result1$AT - result2$AT
 
-## estimating ATC##
+# estimating ATC
 result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
 
-## an estimate of ATC
+# an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])
 
 }

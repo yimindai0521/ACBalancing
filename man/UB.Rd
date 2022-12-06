@@ -5,35 +5,49 @@
 \title{Univariate Balancing}
 \usage{
 UB(
-  x,
+  covariate,
   treat,
   group1,
-  group2 = NA,
+  group2 = NULL,
   outcome,
-  delta.space = c(0.1, 0.01, 0.001, 1e-04, 1e-05, 1e-06),
-  iterations = 1000
+  opti.method = c("BFGS", "proximal"),
+  delta.space = c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
+  iterations = 1000,
+  convergence = 10^{
+     -8
+ },
+  rate = 10,
+  bootstrap.time = 1000
 )
 }
 \arguments{
-\item{x}{covariates.}
+\item{covariate}{covariates.}
 
-\item{treat}{treatment indicator vector.}
+\item{treat}{treatment indicator.}
 
 \item{group1}{see Details.}
 
-\item{group2}{see Details, Default: NA.}
+\item{group2}{see Details, Default: NULL.}
 
-\item{outcome}{outcome vector.}
+\item{outcome}{outcome.}
 
-\item{delta.space}{tuning parameter in balancing. See Details. Default: c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).}
+\item{opti.method}{The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal"}. Default: "proximal".}
+
+\item{delta.space}{tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).}
 
 \item{iterations}{iteration time in optimization problem, Default: 1000.}
+
+\item{convergence}{Criteria for determining convergence of optimization problems. Default: 10^{-10}.}
+
+\item{rate}{the parameter in Tikhonov-regularized Newton update.}
+
+\item{bootstrap.time}{}
 }
 \value{
-a MB object with the following attributes:
+a UB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
-\item{weight:}{ the estimated Mahalanobis balancing weight.}
+\item{weight:}{ the estimated univariate balancing weight.}
 \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 \item{delta:}{ the tuning parameter we choose.}
 }
@@ -59,14 +73,24 @@ you need to set \code{group1} = 0 and \code{group2} = 1.
 \item This function is feasible when there are more than two groups.
 }
 
-
 \code{delta.space} grid of values for the tuning parameter, a vector of
-candidate values for the degree of approximate covariate balance. The default
-is c(1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6).
+candidate values for the degree of approximate univariate covariate balance. The default
+is c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1).
 }
 \examples{
-## estimating ATE##
+# estimating ATE
 set.seed(0521)
 data <- si.data()
+result1 <- HRB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
+result2 <- HRB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+
+# an estimate of ATE
+result1$AT - result2$AT
+
+# estimating ATC
+result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+
+# an estimate of ATC
+result3$AT - mean(data$Y[data$Tr == 0])
 
 }
