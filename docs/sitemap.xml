@@ -19,9 +19,30 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/CholMB.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Cholesky.html</loc>
+  </url>
+  <url>
+    <loc>/reference/HRB.html</loc>
+  </url>
+  <url>
+    <loc>/reference/MB.html</loc>
+  </url>
+  <url>
+    <loc>/reference/UB.html</loc>
+  </url>
+  <url>
     <loc>/reference/hello.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/si.data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/soft.html</loc>
   </url>
 </urlset>

@@ -15,8 +15,6 @@ LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
-    summarytools,
-    UpSetR,
     ggplot2,
     WeightIt,
     MASS,

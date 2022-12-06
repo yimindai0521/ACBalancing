@@ -1,7 +1,7 @@
 ---
-title: "package_intro"
+title: "A Brief Introduction to ACBalancing"
 output: rmarkdown::html_vignette
-bibliography: MBalance.bib
+bibliography: ACBalancing.bib
 vignette: >
   %\VignetteIndexEntry{package_intro}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,294 +18,96 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(ACBalancing)
 ```
+
 # Introduction
 
-The `MBalance` implements the Mahalanobis balancing method for estimating ATE and ATT or ATC on observational data. Our method has good performance (low bias, small balancing diagnostics) in "Bad Overlap" situations (e.g., $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different, high-dimensional covariate).
+Consider a random sample of $n$ individuals from a population. Let $T$ be a binary treatment indicator with $T=1$ if the individual is treated and $T=0$ otherwise. Let $X=\left(X_1, \cdots, X_p\right)^{\top}$ be a $p$-dimensional vector of pre-treatment covariates. Let $Y$ be the binary outcome. The observed data are $\left\{\left(X_i, T_i, Y_i\right): i=1, \cdots, n\right\}$, which are $n$ independent and identically distributed triples $(X, T, Y)$. Under the potential outcome framework (@imbens2015causal), we define a pair of potential outcomes $\{Y(0), Y(1)\}$ for each individual if he/she were not treated or treated. The observed outcome is defined as $Y=(1-T) Y(0)+T Y(1)$.
 
-```{r}
-# Install the "MBalance" package from github.
-# if (!require(c("devtools","WeightIt","MASS","cobalt"))){
-#     install.packages(c("devtools","WeightIt","MASS","cobalt"))
-# }
-# devtools::install_github("yimindai0521/MBalance")
-library(MBalance)
-library(WeightIt)
-library(MASS)
-library(sbw)
-library(cobalt)
-```
+The causal estimand of interest is the average treatment effect (ATE), defined by $\tau=E\{Y(1)-Y(0)\}=\mu_1-\mu_0$, where $\mu_j=E\{Y(j)\}, j=0,1$. The proposed method can be changed to other causal estimands, e.g., average treatment effect on the treated (ATT). Under the strong ignorability and overlap assumption @imbens2015causal, we can show that $\mu_1=E\left\{\mu_1(X)\right\} = E\left\{\frac{TY}{Pr(T = 1 \mid X)}\right\}$ and $\mu_0=E\left\{\mu_0(X)\right\} = E\left\{\frac{(1-T)Y}{Pr(T = 0 \mid X)}\right\}$. Therefore, we can estimate $\mu_1$ by estimating propensity score $Pr(T = 1 \mid X)$.
 
-# Implementation of other covariate balancing methods
+# Motivation
 
-We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit),`sbwbal`(using R package `sbw` @zubizarreta2021package) to implement Mahalanobis balancing method and other covariate balancing methods, including inverse probability weighting (ps) in @rosenbaum1987model, entropy balancing (ebal) in @hainmueller2012entropy, covariate balancing propensity score (cbps) in  @imai2014covariate, energy balancing (energy) in @huling2020energy, minimal dispersion approximate balancing weights (sbw) in @wang2020minimal. 
+The goal for propensity score $Pr(T = 1 \mid X)$ is to balance the covariate, i.e, $$E\left\{\frac{Tf(X)}{Pr(T = 1 \mid X)}\right\} = E\left\{Tf(X)\right\}$$ where $f(X)$ is a function of $X$.
 
-```{r}
-covbal <- function(X, Tr, Y) {
-  data.matrix <- data.frame(X, factor(Tr))
-  sample.size <- dim(X)[1]
-  dimension <- dim(X)[2]
-
-  character <- names(data.matrix)
-  for (j in 1:(dimension + 1)) {
-    character[j] <- paste(character[j])
-  }
-  myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
-
-  ps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ps")$weights
-  ps.ate <- t(ps.weight[Tr == 1] / sum(ps.weight[Tr == 1])) %*% Y[Tr == 1] - t(ps.weight[Tr == 0] / sum(ps.weight[Tr == 0])) %*% Y[Tr == 0]
-
-  ebal.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ebal")$weights
-  ebal.ate <- t(ebal.weight[Tr == 1] / sum(ebal.weight[Tr == 1])) %*% Y[Tr == 1] - t(ebal.weight[Tr == 0] / sum(ebal.weight[Tr == 0])) %*% Y[Tr == 0]
-  ebal.weight[ebal.weight == 0] <- 1
-
-  cbps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "cbps", over = FALSE)$weights
-  cbps.ate <- t(cbps.weight[Tr == 1] / sum(cbps.weight[Tr == 1])) %*% Y[Tr == 1] - t(cbps.weight[Tr == 0] / sum(cbps.weight[Tr == 0])) %*% Y[Tr == 0]
-
-  energy.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "energy")$weights
-  energy.ate <- t(energy.weight[Tr == 1] / sum(energy.weight[Tr == 1])) %*% Y[Tr == 1] - t(energy.weight[Tr == 0] / sum(energy.weight[Tr == 0])) %*% Y[Tr == 0]
-
-  MB.weight <- rep(NA, sample.size)
-  MB1.result <- MB(x = X, treat = Tr, group1 = 0, outcome = rep(0, sample.size), method = "MB")
-  MB2.result <- MB(x = X, treat = Tr, group1 = 1, outcome = rep(0, sample.size), method = "MB")
-  MB.weight[Tr == 0] <- sum(Tr == 0) * MB1.result$weight
-  MB.weight[Tr == 1] <- sum(Tr == 1) * MB2.result$weight
-  MB.ate <- t(MB.weight[Tr == 1] / sum(MB.weight[Tr == 1])) %*% Y[Tr == 1] - t(MB.weight[Tr == 0] / sum(MB.weight[Tr == 0])) %*% Y[Tr == 0]
-
-
-  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate)))
-}
-
-sbwbal <- function(X, Tr, Y) {
-  data.matrix <- data.frame(X, factor(Tr), Y)
-  dimension <- dim(X)[2]
-  bal <- list()
-  bal$bal_gri <- c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1)
-  character <- names(data.matrix)
-  bal$bal_cov <- character[1:dimension]
-  sbw.result <- FALSE
-  while (sum(dim(as.matrix(sbw.result))) != 15) {
-    sbw.result <- tryCatch(sbw.result <- sbw(dat = data.matrix, ind = character[1 + dimension], bal = bal, out = character[2 + dimension], par = list(par_est = "ate")), error = function(e) {
-      skip_to_next <<- FALSE
-    })
-    bal$bal_gri <- bal$bal_gri[-1]
-  }
-  sbw.weight <- sbw.result$dat_weights$sbw_weights
-  sbw.ate <- t(sbw.weight[Tr == 1] / sum(sbw.weight[Tr == 1])) %*% Y[Tr == 1] - t(sbw.weight[Tr == 0] / sum(sbw.weight[Tr == 0])) %*% Y[Tr == 0]
-  return(list(weight = sbw.weight, ate = sbw.ate))
-}
-```
-
-# Generating data 
-
-We consider three different simulation settings. The first simulation will be Scenario C in our paper. We first generate treatment indicator $T$ from $Bernoulli(0.5)$ for each observation. The observed covariates depend on treatment assignment. If $T = 1$, then $X \sim N(1, \Sigma)$ where the jth row and kth column of $\Sigma$ is $\rho^{|j−k|}$ and we set $\rho = 1/2$, otherwise, $X \sim N(0,I)$. The observed outcome is generated from: $Y(T) = (1 - T)(X_1 + ... + X_6) + T(X_1 + ... + X_6) / 2$. In this setting, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different and thus it's a "Bad Overlap" situation.
-
-
-```{r}
-si.data.bad <- function(dimension = 10, sample.size = 200) {
-  covmatrix <- matrix(0, dimension, dimension)
-  for (i in 1:dimension) {
-    for (j in 1:dimension) {
-      covmatrix[i, j] <- 2^{
-        -abs(i != j)
-      }
-    }
-  }
-  treat <- rbinom(sample.size, 1, 0.5)
-  z1 <- mvrnorm(sample.size, mu = rep(1, dimension), Sigma = covmatrix)
-  z0 <- mvrnorm(sample.size, mu = rep(0, dimension), Sigma = diag(dimension))
-  X <- treat * z1 + (1 - treat) * z0
-  noise <- rnorm(sample.size)
-  Y <- (1 + treat) * apply(X[, 1:10], 1, sum) + noise
-  return(list(X = X, treat = treat, Y = Y))
-}
-```
-
-The second simulation setting corresponds Scenario D to our paper. The observed covariates are simulated by $X \sim N(1,I)$. The treatment indicator is simulated from $T ∼ Bernoulli(\pi(X))$ with $π(X) = 1/(1+19 \exp(X_1+···+X_{10}−10))$. The outcome is simulated from $Y = (1+T)(X_1+···+X_{10}) + \epsilon$, where $\epsilon \sim N(0,1)$. In this setting, $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1 and thus it's a "Bad Overlap" situation.
-
-```{r}
-si.data.badover <- function(dimension = 10, sample.size = 1000) {
-  X <- matrix(rnorm(sample.size * dimension) + 1, nrow = sample.size, ncol = dimension)
-  ps <- 1 / (1 + 19 * exp(apply(X[, 1:10], 1, sum) - 10))
-  treat <- rep(NA, sample.size)
-  for (i in 1:sample.size) {
-    treat[i] <- rbinom(1, 1, ps[i])
-  }
-  noise <- rnorm(sample.size)
-  Y <- (1 + treat) * apply(X[, 1:10], 1, sum) + noise
-  return(list(X = X, treat = treat, Y = Y))
-}
-```
-
-# `MB`: estimating average treatment effect
-
-We will use function \texttt{love.plot} in R package @Greifer2022cobalt to plot ASMD to compare the performance for different covariate balancing methods.
-
-```{r}
-## generating data from Scenario C
-set.seed(1999)
-data <- si.data.bad()
-result <- covbal(data$X, data$treat, data$Y)
-sbw.re <- sbwbal(data$X, data$treat, data$Y)
-
-## plot ASMD
-dimension <- dim(data$X)[2]
-data.matrix <- data.frame(data$X, factor(data$treat))
-character <- names(data.matrix)
-for (j in 1:(dimension + 1)) {
-  character[j] <- paste(character[j])
-}
-myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
-love.plot(myformula,
-  data = data.matrix, estimand = "ATE",
-  stats = c("mean.diffs"),
-  weights = list(
-    w1 = result$weight$MB,
-    w2 = result$weight$ps,
-    w3 = result$weight$ebal,
-    w4 = result$weight$cbps,
-    w5 = result$weight$energy,
-    w6 = sbw.re$weight
-  ),
-  var.order = "unadjusted",
-  abs = TRUE,
-  line = TRUE,
-  thresholds = c(m = .1),
-  sample.names = c("Unweighted", "MB", "PS", "ebal", "cbps", "energy", "sbw"),
-  limits = list(m = c(0, 1.5)),
-  wrap = 20,
-  position = "top"
-)
-
-## generating data from Scenario D
-data <- si.data.badover()
-result <- covbal(data$X, data$treat, data$Y)
-sbw.re <- sbwbal(data$X, data$treat, data$Y)
-
-## plot ASMD
-dimension <- dim(data$X)[2]
-data.matrix <- data.frame(data$X, factor(data$treat))
-character <- names(data.matrix)
-for (j in 1:(dimension + 1)) {
-  character[j] <- paste(character[j])
-}
-myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
-love.plot(myformula,
-  data = data.matrix, estimand = "ATE",
-  stats = c("mean.diffs"),
-  weights = list(
-    w1 = result$weight$MB,
-    w2 = result$weight$ps,
-    w3 = result$weight$ebal,
-    w4 = result$weight$cbps,
-    w5 = result$weight$energy,
-    w6 = sbw.re$weight
-  ),
-  var.order = "unadjusted",
-  abs = TRUE,
-  line = TRUE,
-  thresholds = c(m = .1),
-  sample.names = c("Unweighted", "MB", "PS", "ebal", "cbps", "energy", "sbw"),
-  limits = list(m = c(0, 1)),
-  wrap = 20,
-  position = "top"
-)
-```
-
-We can find that ASMD of MB is significantly lower than other covariate balancing methods.
-
-We repeat 200 times.
-```{r}
-mainf1 <- function(iteration = 1000) {
-  result1 <- matrix(0, iteration, 5)
-  result2 <- matrix(0, iteration, 5)
-  for (i in 1:iteration) {
-    data1 <- si.data.bad()
-    data2 <- si.data.badover()
-    result1[i, ] <- covbal(data1$X, data1$treat, data1$Y)$ate
-    result2[i, ] <- covbal(data2$X, data2$treat, data2$Y)$ate
-  }
-  return(list(bad = list(ps_bias = mean(result1[, 1]) - 5, ebal_bias = mean(result1[, 2]) - 5, cbps_bias = mean(result1[, 3]) - 5, energy_bias = mean(result1[, 4]) - 5, MB_bias = mean(result1[, 5]) - 5), badover = list(ps_bias = mean(result2[, 1]) - 10, ebal_bias = mean(result2[, 2]) - 10, cbps_bias = mean(result2[, 3]) - 10, energy_bias = mean(result2[, 4]) - 10, MB_bias = mean(result2[, 5]) - 10)))
-}
-
-set.seed(0521)
-options(warn = -1)
-mainf1(10)
-```
-
-We can find that our method has lower bias than other methods because our purposed method has significantly lower imbalance and thus greatly outperforms other methods.
-
-# Interpretation
-```{r}
-## generating data
-library(MBalance)
-set.seed(0521)
-data <- si.data()
-result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB")
-result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, method = "MB")
-
-## (\beta_1-\beta_0)
-result1$parameter - result2$parameter
-```
-
-In function `si.data`, we generate the treatment assignment from the logistic regression model: $Pr(T = 1 | X) = 1/ (1 + \exp(X_1 + ... + X_{10}))$. The ratio $Pr(T = 1 | X) / Pr(T = 0 | X) \text{ is } \exp(- X_1 - ... - X_{10})$.  Similarly, Mahalanobis balancing assume the propensity score model is $Pr(T = a | X) = \exp(\beta_a^{\top}X)$, then the ratio is $Pr(T = 1 | X) / Pr(T = 0 | X) will be \exp((\beta_1-\beta_0)^{\top}X)$. In simulation, our result `result1$parameter - result2$parameter = -(1.08,1.07 1.02,1.00,0.83,0.95,1.19,0.96,0.74,1.06)` approximates to the true value $-(1,1,1,1,1,1,1,1,1,1,1,1)$.
-
-Our method can be applied to multiple groups. We generate the observed covariate $X = (X_1, ..., X_10)$, then the assignment will be simulated from $$
-\begin{aligned}
-Pr(T = 1 \mid X) & = \frac{1}{1 + \exp(4X_1 + ... + 4X_5) + \exp(2X_6 + ... + 2X_{10})} \\
-Pr(T = 2 \mid X) & = \frac{\exp(4X_1 + ... + 4X_5)}{1 + \exp(4X_1 + ... + 4X_5) + \exp(2X_6 + ... + 2X_{10})} \\
-Pr(T = 3 \mid X) & = \frac{\exp(2X_6 + ... + 2X_{10})}{1 + \exp(4X_1 + ... + 4X_5) + \exp(2X_6 + ... + 2X_{10})}
-\end{aligned}
+In finite sample, the above formula is 
+$$\sum_{i=1}^{n}\frac{T_if(X_i)}{\hat{Pr}(T = 1 \mid X_i)} = \sum_{i=1}^{n}f(X_i)$$
+This motivates covariate balancing method, that is, we directly balance covariate instead of estimating propensity score method. The most well-known method is entropy balancing (@hainmueller2012entropy) and stable weighting (@zubizarreta2015stable).
 
 $$
-```{r}
-si.data.mult <- function(sample.size = 500, dimension = 10) {
-  X <- matrix(rnorm(sample.size * dimension), nrow = sample.size, ncol = dimension)
-  ps1 <- rep(1, sample.size)
-  ps2 <- exp(4 * apply(X[, 1:5], 1, sum))
-  ps3 <- exp(2 * apply(X[, 6:10], 1, sum))
-  ps <- cbind(ps1 / (ps1 + ps2 + ps3), ps2 / (ps1 + ps2 + ps3), ps3 / (ps1 + ps2 + ps3))
-  uniform <- runif(sample.size)
-  index <- cbind(ps[, 1] < uniform, ps[, 1] + ps[, 2] < uniform)
-  Tr <- apply(index, 1, sum) + 1
-  Y <- apply(X[, 1:10], 1, sum)
-  return(list(X = X, Tr = Tr, Y = Y))
-}
-```
+\begin{array}{ll}
+\underset{\boldsymbol{w}}{\operatorname{minimize}} & \sum_{i=1}^{n} T_if(w_i) \\
+\text { subject to } & \sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} = \sum_{i=1}^{n}f(X_i) / n\\
+& \mathbf{1}^{\top} \boldsymbol{w}=1, \\
+& \boldsymbol{w} \succeq 0,
+\end{array}
+$$
+when $f(w) = (w - \frac{1}{n})^2$, it's stable weighting and when $f(w) = w\log(w)$, it's entropy balancing.
 
-Then we generate data and study our method in multiple group:
+However, the exact balancing condition ($\sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} = \sum_{i=1}^{n}f(X_i) / n$) may not hold in finite sample.
+We call this "Bad Overlap" situation when we cannot find a solution $w$ to fulfill the exact balancing condition. The "Bad Overlap" may happen when $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different or the covariate is high-dimensional.
 
-```{r}
-set.seed(1999)
-data <- si.data.mult()
-result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB", delta.space = c(1))
-result2 <- MB(x = data$X, treat = data$Tr, group1 = 2, outcome = data$Y, method = "MB", delta.space = c(1))
-result3 <- MB(x = data$X, treat = data$Tr, group1 = 3, outcome = data$Y, method = "MB", delta.space = c(1))
+To alleviate the feasibility problem, @wang2020minimal proposed minimal dispersion approximately balancing weights (MDABW) as an univariate approximate balancing framework, which relaxes the balancing conditions by using inequality constraints.
 
-result2$parameter - result1$parameter
-result3$parameter - result1$parameter
-```
+$$
+\begin{array}{ll}
+\underset{\boldsymbol{w}}{\operatorname{minimize}} & \sum_{i=1}^{n} T_if(w_i) \\
+\text { subject to } & |\sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} - \sum_{i=1}^{n}f(X_i) / n | \leq \delta_k, \quad k = 1,\cdots,d\\
+& \boldsymbol{w} \succeq 0,
+\end{array}
+$$
+There are other robust balancing methods which may not suffer the feasibility problem. @xu2021hierarchically imposes ridge penalties in the optimization problem. @wong2018kernel minimized covariate imbalance directly by the regularized kernel regression method.
 
-We can find that our result is close to the true parameter in the propensity score model.
+There is a potential issue with univariate approximate balancing. The unvariate balance does not guarantee overall balance, especially in the case of bad-overlap scenario, as shown in the numerical study. Another issue is that there is no principled way to select the threshold parameters simultaneously. Extension of MDABW to handle "Bad Overlap" issue remains an open work.
 
-The true ratio is $Pr(T = 2 | X) / Pr(T = 1 | X) = \exp(4X_1 + ... + 4X_5)$, $Pr(T = 3 | X) / Pr(T = 1 | X) = \exp(2X_6 + ... + 2X_{10})$. In simulation, our result `result2$parameter - result1$parameter` $\approx = (4,4,4,4,4,0,0,0,0,0)$ and `result3$parameter - result1$parameter` $\approx = (0,0,0,0,0,2,2,2,2,2)$. 
+Multivariate covariate balance can greatly help overcome the limitations of univariate approximate balancing. Also, we provide a single threshold parameter attached to the quadratic inequality constraint in Mahalanobis balancing method, which greatly handles the issue of multiple threshold parameters. In practice, the Mahalanobis balancing method has good performance (low bias, small balancing diagnostics) especially in "Bad Overlap" situations.
 
 ```{r}
-set.seed(1999)
-data <- si.data.mult()
-result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB", delta.space = c(1))
-result2 <- MB(x = data$X, treat = data$Tr, group1 = 2, outcome = data$Y, method = "MB", delta.space = c(1))
-result3 <- MB(x = data$X, treat = data$Tr, group1 = 3, outcome = data$Y, method = "MB", delta.space = c(1))
-
-result2$parameter - result1$parameter
-result3$parameter - result1$parameter
+# Install the "ACBalancing" package from github.
+# if (!require(c("devtools", "WeightIt", "MASS", "ATE.ncb"))){
+#     install.packages(c("devtools", "WeightIt", "MASS", "ATE.ncb"))
+# }
+# devtools::install_github("yimindai0521/ACBalancing")
+library(WeightIt)
+library(MASS)
+library(ATE.ncb)
 ```
+
+# Get Started
+
+```{r}
+set.seed(0521)
+data <- si.data()
+result1 <- MB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, opti.method = "proximalC", method = "MB")
+result2 <- MB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, opti.method = "proximalC", method = "MB")
+result3 <- UB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, opti.method = "proximal")
+result4 <- UB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, opti.method = "proximal")
+result5 <- HRB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, second.moment = FALSE, third.moment = FALSE, interact = FALSE)
+result6 <- HRB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, second.moment = FALSE, third.moment = FALSE, interact = FALSE)
+
+# estimating ATE
+result1$AT - result2$AT
+result3$AT - result4$AT
+result5$AT - result6$AT
+
+# parameter for propensity score (\beta_1-\beta_0)
+result1$parameter - result2$parameter
+result3$parameter - result4$parameter
+result5$parameter - result6$parameter
+
+# Generalized Mahalobnis Imbalance Measure
+result1$GMIM + result2$GMIM
+result3$GMIM + result4$GMIM
+result5$GMIM + result6$GMIM
+```
+
+In function `si.data`, we generate the treatment assignment from the logistic regression model: $Pr(T = 1 | X) = 1/ (1 + \exp(X_1 + ... + X_{10}))$. The ratio $Pr(T = 1 | X) / Pr(T = 0 | X) \text{ is } \exp(- X_1 - ... - X_{10})$. Similarly, Mahalanobis balancing assume the propensity score model is $Pr(T = a | X) = \exp(\beta_a^{\top}X)$, then the ratio is $Pr(T = 1 | X) / Pr(T = 0 | X) will be \exp((\beta_1-\beta_0)^{\top}X)$, see @zhao2019covariate for more details. In simulation, our result `result1$parameter - result2$parameter = (-1.07, -1.07, -1.02, -1.00,  -0.83, -0.95, -1.19, -0.96, -0.73, -1.06)` approximates to the true value $-(1,1,1,1,1,1,1,1,1,1,1,1)$.
+
 
 # Balancing Covariate in Finite Sample
 
-We discuss our method in ``Bad Overlap" setting. We generate treatment indicator $T$ from $Bernoulli(0.5)$ for each observation. The observed covariates depend on treatment assignment. If $T = 1$, then $X \sim N(2, \Sigma)$ where the jth row and kth column of $\Sigma$ is $\rho^{|j−k|}$ and we set $\rho = 1/2$, otherwise, $X \sim N(0,I)$. The observed outcome is generated from: $Y(T) = (1 - T)(X_1 + ... + X_{10}) + T(X_1 + ... + X_{10}) / 2$. In this setting, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different and thus it's a very "Bad Overlap" situation.
+We discuss our method in "Bad Overlap" setting. We generate treatment indicator $T$ from $Bernoulli(0.5)$ for each observation. The observed covariates depend on treatment assignment. If $T = 1$, then $X \sim N(2, \Sigma)$ where the jth row and kth column of $\Sigma$ is $\rho^{|j−k|}$ and we set $\rho = 1/2$, otherwise, $X \sim N(0,I)$. The observed outcome is generated from: $Y(T) = (1 - T)(X_1 + ... + X_{10}) + T(X_1 + ... + X_{10}) / 2$. In this setting, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different and thus it's a very "Bad Overlap" situation.
 
 ```{r}
-library(MASS)
 si.data.imbal <- function(sample.size = 500, dimension = 10) {
   covmatrix <- matrix(0, dimension, dimension)
   treat <- rbinom(sample.size, 1, 0.5)
@@ -317,30 +119,188 @@ si.data.imbal <- function(sample.size = 500, dimension = 10) {
   return(list(X = X, treat = treat, Y = Y))
 }
 
-## sample.size = 500
+# sample.size = 500
 set.seed(1999)
 data <- si.data.imbal(sample.size = 500)
-MB(x = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB")$GMIM
-MB(x = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 
 ## sample.size = 5000
 data <- si.data.imbal(sample.size = 5000)
-MB(x = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB")$GMIM
-MB(x = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 
 ## sample.size = 50000
 data <- si.data.imbal(sample.size = 50000)
-MB(x = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB")$GMIM
-MB(x = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
+MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 ```
-When the sample size = 500, we find that GMIM is quite large and thus we not recommend to use MB method to estimate average treatment effect. MB method may not approximately balances covariate in finite sample in very ``Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result that produced by MB method. Hence, our method has better performance when the sample size is large. 
 
-# Bad Overlap in Propensity score
+When the sample size = 500, we find that GMIM is quite large and thus we not recommend to use MB method to estimate average treatment effect. MB method may not approximately balances covariate in finite sample in very \`\`Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result that produced by MB method. When the GMIM is relatively small, we recommend to use MB method to estimate average treatment effect.
 
-We revisit the second simulation setting corresponds Scenario D to our paper. The observed covariates are simulated by $X \sim N(1,I)$. The treatment indicator is simulated from $T ∼ Bernoulli(\pi(X))$ with $π(X) = 1/(1+19 \exp(X_1+···+X_{10}−10))$. The outcome is simulated from $Y = (1+T)(X_1+···+X_{10}) + \epsilon$, where $\epsilon \sim N(0,1)$. In this setting, $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1 and thus it's a "Bad Overlap" situation.
+# Implementation of other covariate balancing methods
+
+We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit) to implement Mahalanobis balancing method and other covariate balancing methods, including inverse probability weighting (ps) in @rosenbaum1987model, entropy balancing (ebal) in @hainmueller2012entropy, covariate balancing propensity score (cbps) in @imai2014covariate, energy balancing (energy) in @huling2020energy, minimal dispersion approximate balancing weights (UB) in @wang2020minimal, kernel-based covariate balancing (kernel) in @wong2018kernel and @.
 
 ```{r}
-si.data.badover <- function(dimension = 10, sample.size = 1000) {
+covbal <- function(X, Tr, Y, MB.only = FALSE) {
+  data.matrix <- data.frame(X, factor(Tr))
+  sample.size <- dim(X)[1]
+  dimension <- dim(X)[2]
+
+  ps.weight <- rep(NA, sample.size)
+  ps.ate <- NA
+  ebal.weight <- rep(NA, sample.size)
+  ebal.ate <- NA
+  cbps.weight <- rep(NA, sample.size)
+  cbps.ate <- NA
+  energy.weight <- rep(NA, sample.size)
+  energy.ate <- NA
+  kernel.weight <- rep(NA, sample.size)
+  kernel.ate <- NA
+  HRB.weight <- rep(NA, sample.size)
+  HRB.ate <- NA
+  UB.weight <- rep(NA, sample.size)
+  UB.ate <- NA
+    
+  if(MB.only == FALSE){
+  character <- names(data.matrix)
+  for (j in 1:(dimension + 1)) {
+    character[j] <- paste(character[j])
+  }
+  myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
+
+  ps.weight <- rep(NULL, sample.size)
+  ps.ate <- NULL
+  ps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ps")$weights
+  ps.ate <- t(ps.weight[Tr == 1] / sum(ps.weight[Tr == 1])) %*% Y[Tr == 1] - t(ps.weight[Tr == 0] / sum(ps.weight[Tr == 0])) %*% Y[Tr == 0]
+
+  ebal.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ebal")$weights
+  ebal.ate <- t(ebal.weight[Tr == 1] / sum(ebal.weight[Tr == 1])) %*% Y[Tr == 1] - t(ebal.weight[Tr == 0] / sum(ebal.weight[Tr == 0])) %*% Y[Tr == 0]
+  ebal.weight[ebal.weight == 0] <- 1
+
+  cbps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "cbps", over = FALSE)$weights
+  cbps.ate <- t(cbps.weight[Tr == 1] / sum(cbps.weight[Tr == 1])) %*% Y[Tr == 1] - t(cbps.weight[Tr == 0] / sum(cbps.weight[Tr == 0])) %*% Y[Tr == 0]
+  
+  energy.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "energy")$weights
+  energy.ate <- t(energy.weight[Tr == 1] / sum(energy.weight[Tr == 1])) %*% Y[Tr == 1] - t(energy.weight[Tr == 0] / sum(energy.weight[Tr == 0])) %*% Y[Tr == 0]
+  
+  # Sobolev kernel
+  Xstd <- transform.sob(X)$Xstd # standardize X to [0,1]^p
+  K <- getGram(Xstd) # get Gram matrix using Sobolev kernel
+  nlam <- 20
+  lams <- exp(seq(log(1e-8), log(1), len = nlam))
+
+  # compute weights for T=1 / T=0
+  fit1 <- ATE.ncb.SN(Tr, K, lam1s = lams, traceit = FALSE)
+  if (sum(fit1$warns)) cat("lambda bound warning!\n")
+  fit0 <- ATE.ncb.SN(1 - Tr, K, lam1s = lams, traceit = FALSE)
+  if (sum(fit0$warns)) cat("lambda bound warning!\n")
+  kernel.ate <- mean(fit1$w * Y - fit0$w * Y)
+  
+  UB.weight <- rep(NA, sample.size)
+  UB1.result <- UB(covariate = X, treat = Tr, group1 = 0, outcome = Y, opti.method = "proximal")
+  UB2.result <- UB(covariate = X, treat = Tr, group1 = 1, outcome = Y, opti.method = "proximal")
+  UB.weight[Tr == 0] <- sum(Tr == 0) * UB1.result$weight
+  UB.weight[Tr == 1] <- sum(Tr == 1) * UB2.result$weight
+  UB.ate <- t(UB.weight[Tr == 1] / sum(UB.weight[Tr == 1])) %*% Y[Tr == 1] - t(UB.weight[Tr == 0] / sum(UB.weight[Tr == 0])) %*% Y[Tr == 0]
+  
+  HRB1.result <- HRB(covariate = X, treat = Tr, group1 = 1, outcome = Y)
+  HRB2.result <- HRB(covariate = X, treat = Tr, group1 = 0, outcome = Y)
+  HRB.weight[Tr == 0] <- sum(Tr == 0) * HRB1.result$weight
+  HRB.weight[Tr == 1] <- sum(Tr == 1) * HRB2.result$weight
+  HRB.ate <- t(HRB.weight[Tr == 1] / sum(HRB.weight[Tr == 1])) %*% Y[Tr == 1] -   t(HRB.weight[Tr == 0] / sum(HRB.weight[Tr == 0])) %*% Y[Tr == 0]
+  }
+  
+  MB.weight <- rep(NA, sample.size)
+  MB1.result <- MB(covariate = X, treat = Tr, group1 = 0, outcome = rep(0, sample.size), method = "MB", opti.method = "proximalC", rate = 10)
+  MB2.result <- MB(covariate = X, treat = Tr, group1 = 1, outcome = rep(0, sample.size), method = "MB", opti.method = "proximalC", rate = 10)
+  MB.weight[Tr == 0] <- sum(Tr == 0) * MB1.result$weight
+  MB.weight[Tr == 1] <- sum(Tr == 1) * MB2.result$weight
+  MB.ate <- t(MB.weight[Tr == 1] / sum(MB.weight[Tr == 1])) %*% Y[Tr == 1] - t(MB.weight[Tr == 0] / sum(MB.weight[Tr == 0])) %*% Y[Tr == 0]
+
+  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight, UB = UB.weight, HRB = HRB.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate, UB = UB.ate, HRB = HRB.ate, kernel = kernel.ate)))
+}
+```
+
+# Replication of Simulation
+
+We consider four different simulation settings.
+
+The first simulation will be Scenario A in our paper.
+
+```{r}
+si.data.Wong.Chan <- function(dimension = 10 , sample.size = 200){
+  sample.matrix <- matrix(0,sample.size,dimension+4)
+  for(i in 1:sample.size){  
+    z = mvrnorm(1, mu = rep(0,dimension), Sigma = diag(dimension))
+    sample.matrix[i,1] <- exp(z[1]/2)
+    sample.matrix[i,2] <- z[2]/(exp(z[1])+1)
+    sample.matrix[i,3] <- (z[1]*z[3]+0.6)^(3)
+    sample.matrix[i,4] <- (z[2]+z[4]+20)^2
+    sample.matrix[i,5:dimension] <- z[5:dimension]
+    p                  <- 1/(exp(0.5*z[1]+0.1*z[4])+1)
+    sample.matrix[i,dimension+1] <- rbinom(1,1,p)
+    temp               <- rnorm(1)
+    sample.matrix[i,dimension+2] <- 210 + (1.5*sample.matrix[i,dimension+1]-0.5)*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) + temp
+    sample.matrix[i,dimension+3] <- 210 + 1*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) 
+    sample.matrix[i,dimension+4] <- 210 - 0.5*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) 
+  }
+  return(list(X = sample.matrix[,1:dimension], treat = sample.matrix[, dimension + 1], Y = sample.matrix[, dimension + 2]))
+}
+```
+
+The second simulation will be Scenario B in our paper.
+
+```{r}
+si.data.interaction <- function(dimension = 18, sample.size = 200){
+  sample.matrix        <- matrix(0 , sample.size , dimension + (dimension*(dimension+1)/2 + 4))
+  covariance.matrix.A  <- matrix(0 , dimension , dimension)
+  covariance.matrix.B  <- matrix(0 , dimension , dimension)
+  for(i in 1:dimension){for(j in 1:dimension){covariance.matrix.A[i,j] <- 2^{-abs(i!=j)}}}
+  for(i in 1:dimension){for(j in 1:dimension){covariance.matrix.B[i,j] <- 1}}
+  for(i in 1:sample.size){  
+    p  <- rbinom(1,1,0.5)
+    z1 <- mvrnorm(1, mu = rep(1,dimension), Sigma = covariance.matrix.A)
+    z0 <- mvrnorm(1, mu = rep(1,dimension), Sigma = diag(dimension))
+    if(p == 1){z <- z1}
+    if(p == 0){z <- z0} 
+    sample.matrix[i,1:dimension] <- z
+    for(f in 1:dimension){
+      for(k in 1:f){
+        sample.matrix[i,dimension + f*(f-1)/2 + k] <- z[k]*z[f]
+      }
+    }
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 1)] <- p
+    temp <- rnorm(1)
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] <- 2 * sum(z) + 2*(z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[11]+z[11]*z[12]+z[12]*z[13]+z[13]*z[14]+z[14]*z[15]+z[15]*z[16]+z[16]*z[17]+z[17]*z[18]+z[18]*z[1])
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)] <- 1 * sum(z) + (z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[11]+z[11]*z[12]+z[12]*z[13]+z[13]*z[14]+z[14]*z[15]+z[15]*z[16]+z[16]*z[17]+z[17]*z[18]+z[18]*z[1])
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 2)] <- p *   sample.matrix[i,(dimension + dimension*(dimension+1)/2 + 3)] + (1 - p) * sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 4)] + temp
+  }
+  true_Y <- mean(sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] - sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)])
+  return(list(X = sample.matrix[, 1:(dimension + dimension*(dimension+1)/2)], treat = sample.matrix[, dimension + (dimension*(dimension+1)/2 + 1)], Y = sample.matrix[, dimension*(dimension+1)/2 + 2], true_Y = true_Y))
+}
+```
+
+The third simulation will be Scenario C in our paper. We first generate treatment indicator $T$ from $Bernoulli(0.5)$ for each observation. The observed covariates depend on treatment assignment. If $T = 1$, then $X \sim N(1, \Sigma)$ where the jth row and kth column of $\Sigma$ is $\rho^{|j−k|}$ and we set $\rho = 1/2$, otherwise, $X \sim N(0,I)$. The observed outcome is generated from: $Y(T) = (1 - T)(X_1 + ... + X_6) + T(X_1 + ... + X_6) / 2$. In this setting, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different and thus it's a "Bad Overlap" situation.
+
+```{r}
+si.data.extreme.mean.diff <- function(dimension = 10, sample.size = 200) {
+  covmatrix <- matrix(0, dimension, dimension)
+  treat <- rbinom(sample.size, 1, 0.5)
+  z1 <- mvrnorm(sample.size, mu = rep(1, dimension), Sigma = diag(dimension))
+  z0 <- mvrnorm(sample.size, mu = rep(0, dimension), Sigma = diag(dimension))
+  X <- treat * z1 + (1 - treat) * z0
+  noise <- rnorm(sample.size)
+  Y <- (1 + treat) * apply(X[, 1:10], 1, sum) + noise
+  return(list(X = X, treat = treat, Y = Y))
+}
+```
+
+The fourth simulation setting corresponds Scenario D to our paper. The observed covariates are simulated by $X \sim N(1,I)$. The treatment indicator is simulated from $T ∼ Bernoulli(\pi(X))$ with $π(X) = 1/(1+19 \exp(X_1+···+X_{10}−10))$. The outcome is simulated from $Y = (1+T)(X_1+···+X_{10}) + \epsilon$, where $\epsilon \sim N(0,1)$. In this setting, $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1 and thus it's a "Bad Overlap" situation.
+
+```{r}
+si.data.extreme_sample_size <- function(dimension = 10, sample.size = 1000) {
   X <- matrix(rnorm(sample.size * dimension) + 1, nrow = sample.size, ncol = dimension)
   ps <- 1 / (1 + 19 * exp(apply(X[, 1:10], 1, sum) - 10))
   treat <- rep(NA, sample.size)
@@ -349,10 +309,37 @@ si.data.badover <- function(dimension = 10, sample.size = 1000) {
   }
   noise <- rnorm(sample.size)
   Y <- (1 + treat) * apply(X[, 1:10], 1, sum) + noise
-  return(list(X = X, treat = factor(treat), Y = Y, ps = ps))
+  return(list(X = X, treat = treat, Y = Y))
 }
 ```
 
+We repeat 200 times.
+
+```{r}
+mainf1 <- function(iteration = 1000) {
+  result1 <- matrix(0, iteration, 8)
+  result2 <- matrix(0, iteration, 8)
+  result3 <- matrix(0, iteration, 8)
+  result4 <- matrix(0, iteration, 8)
+  data2Y <- rep(NA, iteration)
+  for (i in 1:iteration) {
+    data1 <- si.data.Wong.Chan()
+    data2 <- si.data.interaction()
+    data3 <- si.data.extreme.mean.diff()
+    data4 <- si.data.extreme_sample_size()
+    result1[i, ] <- covbal(data1$X, data1$treat, data1$Y)$ate
+    result2[i, ] <- covbal(data2$X, data2$treat, data2$Y, MB.only = TRUE)$ate
+    result3[i, ] <- covbal(data3$X, data3$treat, data3$Y)$ate
+    result4[i, ] <- covbal(data4$X, data4$treat, data4$Y)$ate
+    data2Y[i] <- data2$true_Y
+  }
+  return(list(Wong.Chan = colMeans(result1), si.data.interaction = colMeans(result2) - mean(data2Y), extreme.mean.diff = colMeans(result3) - 5, extreme_sample_size = colMeans(result4) - 10))
+}
+
+set.seed(1124)
+mainf1(1)
+```
+
+We can find that our method has lower bias than other methods because our purposed method has significantly lower imbalance and thus greatly outperforms other methods.
 
 # References
-
