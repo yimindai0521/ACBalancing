@@ -33,23 +33,23 @@
 #' candidate values for the degree of multivariate approximate covariate balance.
 #' The default is c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
 #'
-#' @param covariate covariates.
-#' @param treat treatment indicator.
-#' @param group1 see Details.
-#' @param group2 see Details, Default: NULL.
-#' @param outcome outcome.
-#' @param opti.method The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".
+#' @param covariate Covariates, it should be a n by d matrix where n is sample size and d is dimension.
+#' @param treat The vector of treatment assignments, it should be a vector of length n.
+#' @param group1 group1 is a number, see Details.
+#' @param group2 group2 is a number, see Details, Default: NULL.
+#' @param outcome The outcome vector, it should be a vector of length n.
+#' @param opti.method The optimization method that will be applied to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".
 #' @param method Method to calculate weighting matrix. It should takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: "MB".
-#' @param delta.space tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
-#' @param convergence Criteria for determining convergence of optimization problems. Default: 10^{-10}.
-#' @param rate the parameter in Tikhonov-regularized Newton update.
-#' @param iterations iteration time in optimization problem, Default: 1000.
+#' @param delta.space Tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
+#' @param convergence The absolute tolerance used to determine a stopping criteria for the optimization problems. Default: 10^{-8}.
+#' @param rate The parameter in Tikhonov-regularized Newton update. Default: 10.
+#' @param iterations The maximum number of iteration times in optimization problem, Default: 1000.
 #'
 #' @return a MB object with the following attributes:
 #' \itemize{
 #' \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 #' \item{weight:}{ the estimated Mahalanobis balancing weight.}
-#' \item{ASMD:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+#' \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 #' \item{delta:}{ the tuning parameter we choose.}
 #' }
 #'
@@ -57,14 +57,18 @@
 #' # estimating ATE
 #' set.seed(0521)
 #' data <- si.data()
-#' result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
-#' result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+#' X <- data$X
+#' treat <- data$Tr
+#' Y <- data$Y
+#'
+#' result1 <- MB(covariate = X, treat = treat, group1 = 1, outcome = Y)
+#' result2 <- MB(covariate = X, treat = treat, group1 = 0, outcome = Y)
 #'
 #' # an estimate of ATE
 #' result1$AT - result2$AT
 #'
 #' # estimating ATC
-#' result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+#' result3 <- MB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y)
 #'
 #' # an estimate of ATC
 #' result3$AT - mean(data$Y[data$Tr == 0])
@@ -76,7 +80,7 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
                method = c("MB", "MB2", "kernelMB"), delta.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3), iterations = 1000,
                convergence = 10^{-8}, rate = 10) {
 
-  # Initiazing input
+  # initialize input
   covariate <- as.matrix(covariate)
   treat <- as.vector(treat)
   outcome <- as.vector(outcome)
@@ -137,8 +141,8 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
 
   # Calculate weight for each delta in delta.space
   for (i in 1:length(delta.space)) {
-    eps <- 1000 # initiazing eps
-    beta <- as.vector(rep(0, dimension)) # Set up a space to save the beta for each iteration
+    eps <- 1000 # initialize eps
+    beta <- as.vector(rep(0, dimension)) # initialize beta
 
     # Implementation of BFGS method
     opti.method <- match.arg(opti.method)
@@ -157,8 +161,8 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
         hessian <- solve(crossprod(t(x), t(x) * matrix(exp(crossprod(x, beta_old)), ncol(x), nrow(x))) + rate * diag(rep(1, nrow(x)))) # Calculate modified Hessian Newton update with parameter lambda > 0
         vt <- beta - crossprod(t(hessian), crossprod(t(x), exp(crossprod(x, beta)))) # Gradient step
         beta <- soft(vt, delta.space[i]) # Proximal operator step
-        fobj_old <- sum(exp(t(x) %*% beta_old)) + delta.space[i] * sqrt(sum(beta_old^2)) # Calculate the value of function with beta_old
-        fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2)) # Calculate the value of function with beta
+        fobj_old <- sum(exp(t(x) %*% beta_old)) + delta.space[i] * sqrt(sum(beta_old^2)) # Calculate the value of loss function with beta_old
+        fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2)) # Calculate the value of loss function with beta
         eps <- abs(fobj_old - fobj_new) # Calculate the difference of the value
         iterationtime <- iterationtime + 1
         if(iterationtime >= iterations){
@@ -184,8 +188,9 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
 
   # calculate the AT
   delta <- as.vector(delta.space[which.min(GMIM)]) # Select the tuning parameter in loss function
-  GMIM <- min(GMIM) # Select GMIM
-  weight <- weight.space[, which.min(GMIM)] # Select weight for the corresponding parameter
+  GMIM <- min(GMIM) # Find the GMIM with selected tuning parameter
+  beta <- beta.space[, which.min(GMIM)] # Find the solution to parameter with selected tuning parameter
+  weight <- weight.space[, which.min(GMIM)] # Find the solution to weight with selected tuning parameter
   AT <- crossprod(weight, outcome[treat == group1]) # Calculate average treatment effect in target group
   result <- list(AT = AT, weight = as.vector(weight), GMIM = GMIM, delta = delta, parameter = as.vector(-beta)) # list the result and return
   return(result)

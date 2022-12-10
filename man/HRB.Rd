@@ -22,29 +22,30 @@ HRB(
 )
 }
 \arguments{
-\item{covariate}{covariates.}
+\item{covariate}{Covariates, it should be a n by d matrix where n is sample size and d is dimension.}
 
-\item{treat}{treatment indicator.}
+\item{treat}{The vector of treatment assignments, it should be a vector of length n.}
 
-\item{group1}{see Details.}
+\item{group1}{group1 is a number, see Details.}
 
-\item{group2}{see Details, Default: NULL.}
+\item{group2}{group2 is a number, see Details, Default: NULL.}
 
-\item{outcome}{outcome.}
+\item{outcome}{The outcome vector, it should be a vector of length n.}
 
-\item{alpha.space}{alpha.space is}
+\item{alpha.space}{alpha.space is grid of values for the tuning parameter, a vector of
+candidate values for the degree of the strength of penalty.}
 
-\item{iterations}{iteration time in optimization problem, Default: 1000.}
+\item{iterations}{The maximum number of iteration times in optimization problem, Default: 1000.}
 
-\item{convergence}{Criteria for determining convergence of optimization problems. Default: 10^{-10}.}
+\item{convergence}{The absolute tolerance used to determine a stopping criteria for the optimization problems. Default: 10^{-8}.}
 
-\item{cv.fold}{cv.fold is}
+\item{cv.fold}{cv.fold is the fold of cross validation. It should be a integer.}
 
-\item{second.moment}{second.moment is}
+\item{second.moment}{second.moment is a bool variable to judge whether you will add second moment conditions in balancing. It should take values in {TRUE, FALSE}. Default: TRUE.}
 
-\item{third.moment}{third.moment is}
+\item{third.moment}{third.moment is a bool variable to judge whether you will add third moment conditions in balancing. It should take values in {TRUE, FALSE}. Default: TRUE.}
 
-\item{interact}{interact is}
+\item{interact}{interact is a bool variable to judge whether you will add interaction moment conditions in balancing. It should take values in {TRUE, FALSE}. Default: TRUE.}
 }
 \value{
 a HRB object with the following attributes:
@@ -66,14 +67,18 @@ ridge penalties with a hierarchical structure on the higher-order terms.
 # estimating ATE
 set.seed(0521)
 data <- si.data()
-result1 <- HRB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
-result2 <- HRB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+X <- data$X
+treat <- data$Tr
+Y <- data$Y
+
+result1 <- HRB(covariate = X, treat = treat, group1 = 1, outcome = Y)
+result2 <- HRB(covariate = X, treat = treat, group1 = 0, outcome = Y)
 
 # an estimate of ATE
 result1$AT - result2$AT
 
 # estimating ATC
-result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+result3 <- HRB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y)
 
 # an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])

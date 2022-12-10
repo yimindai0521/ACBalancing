@@ -7,8 +7,15 @@
 soft(vt, lambda, norm = "square-l2")
 }
 \arguments{
-\item{norm}{}
+\item{vt}{input for proximal operator}
+
+\item{lambda}{threshold}
+
+\item{norm}{norm type}
+}
+\value{
+soft_value output for proximal operator
 }
 \description{
-soft
+proximal operator for l_1 norm and l_2 norm
 }

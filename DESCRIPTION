@@ -18,7 +18,9 @@ Suggests:
     ggplot2,
     WeightIt,
     MASS,
-    ATE.ncb
+    ATE.ncb,
+    CBPS,
+    qpdf
 VignetteBuilder: knitr
 RoxygenNote: 7.2.2
 LinkingTo: 

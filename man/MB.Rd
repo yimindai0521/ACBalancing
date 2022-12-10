@@ -21,34 +21,34 @@ MB(
 )
 }
 \arguments{
-\item{covariate}{covariates.}
+\item{covariate}{Covariates, it should be a n by d matrix where n is sample size and d is dimension.}
 
-\item{treat}{treatment indicator.}
+\item{treat}{The vector of treatment assignments, it should be a vector of length n.}
 
-\item{group1}{see Details.}
+\item{group1}{group1 is a number, see Details.}
 
-\item{group2}{see Details, Default: NULL.}
+\item{group2}{group2 is a number, see Details, Default: NULL.}
 
-\item{outcome}{outcome.}
+\item{outcome}{The outcome vector, it should be a vector of length n.}
 
-\item{opti.method}{The optimization method to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".}
+\item{opti.method}{The optimization method that will be applied to optimize loss function. It should takes values in {"BFGS", "proximal", "proximalC"}. Default: "proximalC".}
 
 \item{method}{Method to calculate weighting matrix. It should takes values in {"MB", "MB2", "kernelMB"}. See Details. Default: "MB".}
 
-\item{delta.space}{tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).}
+\item{delta.space}{Tuning parameter in balancing. See Details. Default: c(1e-1, 0.05, 1e-2, 0.005, 1e-3).}
 
-\item{iterations}{iteration time in optimization problem, Default: 1000.}
+\item{iterations}{The maximum number of iteration times in optimization problem, Default: 1000.}
 
-\item{convergence}{Criteria for determining convergence of optimization problems. Default: 10^{-10}.}
+\item{convergence}{The absolute tolerance used to determine a stopping criteria for the optimization problems. Default: 10^{-8}.}
 
-\item{rate}{the parameter in Tikhonov-regularized Newton update.}
+\item{rate}{The parameter in Tikhonov-regularized Newton update. Default: 10.}
 }
 \value{
 a MB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 \item{weight:}{ the estimated Mahalanobis balancing weight.}
-\item{ASMD:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
 \item{delta:}{ the tuning parameter we choose.}
 }
 }
@@ -91,14 +91,18 @@ The default is c(1e-1, 0.05, 1e-2, 0.005, 1e-3).
 # estimating ATE
 set.seed(0521)
 data <- si.data()
-result1 <- MB(x = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
-result2 <- MB(x = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+X <- data$X
+treat <- data$Tr
+Y <- data$Y
+
+result1 <- MB(covariate = X, treat = treat, group1 = 1, outcome = Y)
+result2 <- MB(covariate = X, treat = treat, group1 = 0, outcome = Y)
 
 # an estimate of ATE
 result1$AT - result2$AT
 
 # estimating ATC
-result3 <- MB(x = data$X, treat = data$Tr, group1 = 1, group2 = 0, outcome = data$Y, method = "MB")
+result3 <- MB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y)
 
 # an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])

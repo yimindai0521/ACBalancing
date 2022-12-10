@@ -1,19 +1,20 @@
 #' soft
 #'
-#' @param vt
-#' @param lambda
-#' @param norm
+#' @description proximal operator for l_1 norm and l_2 norm
 #'
-#' @return
+#' @param vt input for proximal operator
+#' @param lambda threshold
+#' @param norm norm type
 #'
-#' @examples
+#' @return soft_value output for proximal operator
+#'
 soft <- function(vt, lambda, norm = "square-l2") {
   if(norm == "square-l2"){
     normvalue <- sqrt(sum(vt^2))
     if (normvalue > lambda) {
-      return((1 - lambda / normvalue) * vt)
+      return((1 - lambda / normvalue) * vt) # output = (1 - lambda / ||beta||_2) * beta if ||beta||_2 >= lambda
     } else {
-    return(rep(0, length(vt)))
+    return(rep(0, length(vt))) # output = 0 if lambda > ||beta||_2
     }
   }
   if(norm == "l1"){

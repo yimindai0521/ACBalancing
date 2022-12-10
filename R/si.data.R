@@ -27,14 +27,18 @@
 #' @rdname si.data
 #' @export
 si.data <- function(sample.size = 500, dimension = 10) {
-  X <- matrix(rnorm(sample.size * dimension), nrow = sample.size, ncol = dimension)
-  ps1 <- rep(1, sample.size)
-  ps2 <- exp(1 * apply(X[, 1:10], 1, sum))
-  ps <- cbind(ps1 / (ps1 + ps2), ps2 / (ps1 + ps2))
+  X <- matrix(rnorm(sample.size * dimension), nrow = sample.size, ncol = dimension) # Generate X as standard normal distribution
+  ps1 <- rep(1, sample.size) # Generate propensity score value for treatment group
+  ps2 <- exp(1 * apply(X[, 1:10], 1, sum)) # Generate propensity score value for control group
+  ps <- cbind(ps1 / (ps1 + ps2), ps2 / (ps1 + ps2)) # initialize propensity score
+
+  # Using propensity score to create the assignment of treatment and control group
   uniform <- runif(sample.size)
   index <- cbind(ps[, 1] > uniform)
-  noise <- rnorm(sample.size)
   Tr <- apply(index, 1, sum)
+
+  # Generate outcome
+  noise <- rnorm(sample.size) # generate noise for outcome model
   Y <- 1 * apply(X[, 1:10], 1, sum) + noise
   return(list(X = X, Tr = Tr, Y = Y))
 }
