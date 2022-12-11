@@ -1,5 +1,5 @@
 #' @title Mahalanobis balancing
-#' @description Mahalanobis balancing is a multivariate perspective of
+#' @description Mahalanobis balancing (Dai, Y., & Yan, Y. (2022).) is a multivariate perspective of
 #' approximate covariate balancing method to estimate average treatment
 #' effect.
 #'
@@ -53,6 +53,10 @@
 #' \item{delta:}{ the tuning parameter we choose.}
 #' }
 #'
+#' @references
+#' Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective
+#' on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
+#'
 #' @examples
 #' # estimating ATE
 #' set.seed(0521)
@@ -78,7 +82,7 @@
 #' @export
 MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c("proximalC", "proximal", "BFGS"),
                method = c("MB", "MB2", "kernelMB"), delta.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3), iterations = 1000,
-               convergence = 10^{-8}, rate = 10) {
+               convergence = 1e-8, rate = 10) {
 
   # initialize input
   covariate <- as.matrix(covariate)

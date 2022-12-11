@@ -40,7 +40,7 @@ result1$AT - result2$AT
 result3$AT - result4$AT
 result5$AT - result6$AT
 
-# parameter for propensity score (\beta_1-\beta_0)
+# parameter difference for propensity score
 result1$parameter - result2$parameter
 result3$parameter - result4$parameter
 result5$parameter - result6$parameter
@@ -50,3 +50,5 @@ result1$GMIM + result2$GMIM
 result3$GMIM + result4$GMIM
 result5$GMIM + result6$GMIM
 ```
+
+For more details, please check website: https://yimindai0521.github.io/ACBalancing.

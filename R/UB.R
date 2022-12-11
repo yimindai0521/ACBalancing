@@ -1,5 +1,5 @@
 #' @title Univariate Balancing
-#' @description Univariate Balancing is a univariate perspective of
+#' @description Univariate Balancing (Wang, Y., & Zubizarreta, J. R. (2020)) is a univariate perspective of
 #' approximate covariate balancing method to estimate average treatment
 #' effect.
 #'
@@ -36,6 +36,14 @@
 #' }
 #'
 #' @rdname UB
+#'
+#' @references
+#' Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately
+#' balancing weights: asymptotic properties and practical considerations,
+#' \emph{Biometrika}
+#' \strong{107(1), 93-105.},
+#' \doi{10.1093/biomet/asz050}.
+#'
 #' @export
 #'
 #' @examples
@@ -60,7 +68,7 @@
 #'
 UB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c("BFGS", "proximal"),
                delta.space = c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1),
-               iterations = 1000, convergence = 10^{-8}, rate = 10, bootstrap.time = 1000) {
+               iterations = 1000, convergence = 1e-8, rate = 10, bootstrap.time = 1000) {
 
   # initialize input
   covariate <- as.matrix(covariate)

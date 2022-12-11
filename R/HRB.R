@@ -23,6 +23,11 @@
 #' }
 #'
 #' @rdname HRB
+#' @references
+#' Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
+#' \emph{Political Analysis}
+#' \strong{forthcoming},
+#' \doi{10.2139/ssrn.3807620}.
 #'
 #' @export
 #'
@@ -47,7 +52,7 @@
 #' result3$AT - mean(data$Y[data$Tr == 0])
 HRB <- function(covariate, treat, group1, group2 = NULL, outcome,
                 alpha.space = c(1e-1, 0.05, 1e-2, 0.005, 1e-3),
-                iterations = 1000, convergence = 10^{-10}, cv.fold = 5,
+                iterations = 1000, convergence = 1e-8, cv.fold = 5,
                 second.moment = TRUE, third.moment = TRUE, interact = TRUE) {
 
   # Initiazing input
