@@ -3,7 +3,7 @@ title: "A Brief Introduction to ACBalancing"
 output: rmarkdown::html_vignette
 bibliography: ACBalancing.bib
 vignette: >
-  %\VignetteIndexEntry{package_intro}
+  %\VignetteIndexEntry{A Brief Introduction to ACBalancing}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,17 +21,30 @@ library(ACBalancing)
 
 # Introduction
 
-Consider a random sample of $n$ individuals from a population. Let $T$ be a binary treatment indicator with $T=1$ if the individual is treated and $T=0$ otherwise. Let $X=\left(X_1, \cdots, X_p\right)^{\top}$ be a $p$-dimensional vector of pre-treatment covariates. Let $Y$ be the binary outcome. The observed data are $\left\{\left(X_i, T_i, Y_i\right): i=1, \cdots, n\right\}$, which are $n$ independent and identically distributed triples $(X, T, Y)$. Under the potential outcome framework (@imbens2015causal), we define a pair of potential outcomes $\{Y(0), Y(1)\}$ for each individual if he/she were not treated or treated. The observed outcome is defined as $Y=(1-T) Y(0)+T Y(1)$.
+Consider a random sample of $n$ individuals from a population.
 
-The causal estimand of interest is the average treatment effect (ATE), defined by $\tau=E\{Y(1)-Y(0)\}=\mu_1-\mu_0$, where $\mu_j=E\{Y(j)\}, j=0,1$. The proposed method can be changed to other causal estimands, e.g., average treatment effect on the treated (ATT). Under the strong ignorability and overlap assumption @imbens2015causal, we can show that $\mu_1=E\left\{\mu_1(X)\right\} = E\left\{\frac{TY}{Pr(T = 1 \mid X)}\right\}$ and $\mu_0=E\left\{\mu_0(X)\right\} = E\left\{\frac{(1-T)Y}{Pr(T = 0 \mid X)}\right\}$. Therefore, we can estimate $\mu_1$ by estimating propensity score $Pr(T = 1 \mid X)$.
+```{=tex}
+\begin{itemize}
+\item Let $T$ be a binary treatment indicator with $T=1$ if the individual is treated and $T=0$ otherwise. 
+\item Let $X=\left(X_1, \cdots, X_p\right)^{\top}$ be a $p$-dimensional vector of pre-treatment covariates. 
+\item Let $Y$ be the binary outcome. 
+\item The observed data are $\left\{\left(X_i, T_i, Y_i\right): i=1, \cdots, n\right\}$, which are $n$ independent and identically distributed triples $(X, T, Y)$. 
+\end{itemize}
+```
+
+Under the potential outcome framework (@imbens2015causal), we define a pair of potential outcomes $\{Y(0), Y(1)\}$ for each individual if he/she were not treated or treated. The observed outcome is defined as $Y=(1-T) Y(0)+T Y(1)$.
+
+The causal estimand of interest is the average treatment effect (ATE), defined by $\tau=E\{Y(1)-Y(0)\}=\mu_1-\mu_0$, where $\mu_j=E\{Y(j)\}, j=0,1$. The proposed method can be changed to other causal estimands, e.g., the average treatment effect on the treated (ATT). Under the strong ignorability and overlap assumption @imbens2015causal, we can show that $\mu_1=E\left\{\mu_1(X)\right\} = E\left\{\frac{TY}{Pr(T = 1 \mid X)}\right\}$ and $\mu_0=E\left\{\mu_0(X)\right\} = E\left\{\frac{(1-T)Y}{Pr(T = 0 \mid X)}\right\}$. Therefore, we can estimate $\mu_1$ by estimating propensity score $Pr(T = 1 \mid X)$.
 
 # Motivation
 
 The goal for propensity score $Pr(T = 1 \mid X)$ is to balance the covariate, i.e, $$E\left\{\frac{Tf(X)}{Pr(T = 1 \mid X)}\right\} = E\left\{Tf(X)\right\}$$ where $f(X)$ is a function of $X$.
 
 In finite sample, the above formula is 
-$$\sum_{i=1}^{n}\frac{T_if(X_i)}{\hat{Pr}(T = 1 \mid X_i)} = \sum_{i=1}^{n}f(X_i)$$
-This motivates covariate balancing method, that is, we directly balance covariate instead of estimating propensity score method. The most well-known method is entropy balancing (@hainmueller2012entropy) and stable weighting (@zubizarreta2015stable).
+$$
+\sum_{i=1}^{n}\frac{T_if(X_i)}{\hat{Pr}(T = 1 \mid X_i)} = \sum_{i=1}^{n}f(X_i)
+$$ 
+This motivates the covariate balancing method, and we directly balance covariates instead of estimating the propensity score method. The most well-known way is entropy balancing (@hainmueller2012entropy) and stable weighting (@zubizarreta2015stable).
 
 $$
 \begin{array}{ll}
@@ -40,13 +53,11 @@ $$
 & \mathbf{1}^{\top} \boldsymbol{w}=1, \\
 & \boldsymbol{w} \succeq 0,
 \end{array}
-$$
-when $f(w) = (w - \frac{1}{n})^2$, it's stable weighting and when $f(w) = w\log(w)$, it's entropy balancing.
+$$ when $f(w) = (w - \frac{1}{n})^2$, it's stable weighting and when $f(w) = w\log(w)$, it's entropy balancing.
 
-However, the exact balancing condition ($\sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} = \sum_{i=1}^{n}f(X_i) / n$) may not hold in finite sample.
-We call this "Bad Overlap" situation when we cannot find a solution $w$ to fulfill the exact balancing condition. The "Bad Overlap" may happen when $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different or the covariate is high-dimensional.
+However, the exact balancing condition ($\sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} = \sum_{i=1}^{n}f(X_i) / n$) may not hold in finite sample. We call this a "Bad Overlap" situation when we cannot find a solution $w$ to fulfill the exact balancing condition. The "Bad Overlap" may happen when $E\{Pr(T = 1 \mid X)\}$ closes to 0 or 1, $E\{ X \mid T = 1\}$ and $E\{ X \mid T = 0\}$ are significantly different or the covariate is high-dimensional.
 
-To alleviate the feasibility problem, @wang2020minimal proposed minimal dispersion approximately balancing weights (MDABW) as an univariate approximate balancing framework, which relaxes the balancing conditions by using inequality constraints.
+To alleviate the feasibility problem, @wang2020minimal proposed minimal dispersion approximately balancing weights (MDABW) as a univariate approximate balancing framework, which relaxes the balancing conditions by using inequality constraints.
 
 $$
 \begin{array}{ll}
@@ -54,12 +65,13 @@ $$
 \text { subject to } & |\sum_{i=1}^{n}\boldsymbol{w_iT_i} \boldsymbol{f(X)} - \sum_{i=1}^{n}f(X_i) / n | \leq \delta_k, \quad k = 1,\cdots,d\\
 & \boldsymbol{w} \succeq 0,
 \end{array}
-$$
-There are other robust balancing methods which may not suffer the feasibility problem. @xu2021hierarchically imposes ridge penalties in the optimization problem. @wong2018kernel minimized covariate imbalance directly by the regularized kernel regression method.
+$$ 
 
-There is a potential issue with univariate approximate balancing. The unvariate balance does not guarantee overall balance, especially in the case of bad-overlap scenario, as shown in the numerical study. Another issue is that there is no principled way to select the threshold parameters simultaneously. Extension of MDABW to handle "Bad Overlap" issue remains an open work.
+Other robust balancing methods may not suffer the feasibility problem. For example, @xu2021hierarchically imposes ridge penalties in the optimization problem, and @wong2018kernel minimizes covariate imbalance directly by the regularized kernel regression method.
 
-Multivariate covariate balance can greatly help overcome the limitations of univariate approximate balancing. Also, we provide a single threshold parameter attached to the quadratic inequality constraint in Mahalanobis balancing method, which greatly handles the issue of multiple threshold parameters. In practice, the Mahalanobis balancing method has good performance (low bias, small balancing diagnostics) especially in "Bad Overlap" situations.
+There is a potential issue with univariate approximate balancing. The univariate balance does not guarantee overall balance, especially in the case of a bad-overlap scenario, as shown in the numerical study. Another issue is that there needs to be a moral way to select the threshold parameters simultaneously. Extension of MDABW to handle the "Bad Overlap" issue remains an open work.
+
+Multivariate covariate balance can significantly help overcome the limitations of univariate approximate balancing. Also, we provide a single threshold parameter attached to the quadratic inequality constraint in the Mahalanobis balancing method, which dramatically handles the issue of multiple threshold parameters. In practice, the Mahalanobis balancing method performs well (low bias, small balancing diagnostics), especially in "Bad Overlap" situations.
 
 ```{r}
 # Install the "ACBalancing" package from github.
@@ -72,7 +84,7 @@ library(MASS)
 library(ATE.ncb)
 ```
 
-# Get Started
+# Get Started and Interpretation of Parameter
 
 ```{r}
 set.seed(0521)
@@ -85,23 +97,22 @@ result5 <- HRB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y
 result6 <- HRB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, second.moment = FALSE, third.moment = FALSE, interact = FALSE)
 
 # estimating ATE
-result1$AT - result2$AT
-result3$AT - result4$AT
-result5$AT - result6$AT
+result1$AT - result2$AT # produce an estimate of ATE using the Mahalanobis balancing method
+result3$AT - result4$AT # produce an estimate of ATE using the Univariate Balancing method
+result5$AT - result6$AT # produce an estimate of ATE using the Hierarchically Regularized Entropy Balancing method
 
 # parameter for propensity score (\beta_1-\beta_0)
-result1$parameter - result2$parameter
-result3$parameter - result4$parameter
-result5$parameter - result6$parameter
+result1$parameter - result2$parameter # produce an estimate of parameter in propensity score using the Mahalanobis balancing method
+result3$parameter - result4$parameter # produce an estimate of parameter in propensity score using the Univariate Balancing method
+result5$parameter - result6$parameter # produce an estimate of parameter in propensity score using the Hierarchically Regularized Entropy Balancing method
 
 # Generalized Mahalobnis Imbalance Measure
-result1$GMIM + result2$GMIM
-result3$GMIM + result4$GMIM
-result5$GMIM + result6$GMIM
+result1$GMIM + result2$GMIM # Generalized Mahalanobis Imbalance Measure for Mahalanobis balancing weights
+result3$GMIM + result4$GMIM # Generalized Mahalanobis Imbalance Measure for Univariate Balancing weights
+result5$GMIM + result6$GMIM # Generalized Mahalanobis Imbalance Measure for Hierarchically Regularized Entropy Balancing weights
 ```
 
-In function `si.data`, we generate the treatment assignment from the logistic regression model: $Pr(T = 1 | X) = 1/ (1 + \exp(X_1 + ... + X_{10}))$. The ratio $Pr(T = 1 | X) / Pr(T = 0 | X) \text{ is } \exp(- X_1 - ... - X_{10})$. Similarly, Mahalanobis balancing assume the propensity score model is $Pr(T = a | X) = \exp(\beta_a^{\top}X)$, then the ratio is $Pr(T = 1 | X) / Pr(T = 0 | X) will be \exp((\beta_1-\beta_0)^{\top}X)$, see @zhao2019covariate for more details. In simulation, our result `result1$parameter - result2$parameter = (-1.07, -1.07, -1.02, -1.00,  -0.83, -0.95, -1.19, -0.96, -0.73, -1.06)` approximates to the true value $-(1,1,1,1,1,1,1,1,1,1,1,1)$.
-
+In function `si.data`, we generate the treatment assignment from the logistic regression model: $Pr(T = 1 | X) = 1/ (1 + \exp(X_1 + ... + X_{10}))$. The ratio $Pr(T = 1 | X) / Pr(T = 0 | X) \text{ is } \exp(- X_1 - ... - X_{10})$. Similarly, Mahalanobis balancing assume the propensity score model is $Pr(T = a | X) = \exp(\beta_a^{\top}X)$, then the ratio is $Pr(T = 1 | X) / Pr(T = 0 | X) will be \exp((\beta_1-\beta_0)^{\top}X)$. If you want to learn more about the interpretation of parameter, please see @zhao2019covariate for more details. In simulation, our result `result1$parameter - result2$parameter = (-1.07,-0.97,-0.97,-0.97,-0.80,-0.880,-1.10, -0.902,-0.69,-1.01)`, `result3$parameter - result4$parameter = (-1.03,-0.94,-0.93,-0.90,-0.73,-0.86,-1.08,-0.85,-0.63,-0.98)` and `result5$parameter - result6$parameter = (-0.78,-0.63,-0.65,-0.64,-0.56,-0.64,-0.74,-0.59,-0.49,-0.72)` approximate to the true value $-(1,1,1,1,1,1,1,1,1,1,1,1)$.
 
 # Balancing Covariate in Finite Sample
 
@@ -125,22 +136,22 @@ data <- si.data.imbal(sample.size = 500)
 MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 
-## sample.size = 5000
+# sample.size = 5000
 data <- si.data.imbal(sample.size = 5000)
 MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 
-## sample.size = 50000
+# sample.size = 50000
 data <- si.data.imbal(sample.size = 50000)
 MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 ```
 
-When the sample size = 500, we find that GMIM is quite large and thus we not recommend to use MB method to estimate average treatment effect. MB method may not approximately balances covariate in finite sample in very \`\`Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result that produced by MB method. When the GMIM is relatively small, we recommend to use MB method to estimate average treatment effect.
+When the sample size = 500, we find that GMIM is quite large, and thus we recommend using something other than the MB method to estimate the average treatment effect. MB method may not approximately balance covariates in the finite sample in very \`\` Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result produced by the MB method. When the GMIM is relatively small, we recommend using the MB method to estimate the average treatment effect. Our method can handle some \`\` Bad Overlap" settings. However, it cannot solve the situation when it's extreme \`\`Bad Overlap" in a finite sample. GMIM is a balancing measure to judge whether our approach can balance covariates.
 
 # Implementation of other covariate balancing methods
 
-We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit) to implement Mahalanobis balancing method and other covariate balancing methods, including inverse probability weighting (ps) in @rosenbaum1987model, entropy balancing (ebal) in @hainmueller2012entropy, covariate balancing propensity score (cbps) in @imai2014covariate, energy balancing (energy) in @huling2020energy, minimal dispersion approximate balancing weights (UB) in @wang2020minimal, kernel-based covariate balancing (kernel) in @wong2018kernel and @.
+We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit) to implement Mahalanobis balancing method and other covariate balancing methods, including inverse probability weighting (ps) in @rosenbaum1987model, entropy balancing (ebal) in @hainmueller2012entropy, covariate balancing propensity score (cbps) in @imai2014covariate, energy balancing (energy) in @huling2020energy, minimal dispersion approximate balancing weights (UB) in @wang2020minimal, kernel-based covariate balancing (kernel) in @wong2018kernel and hierarchically regularized entropy balancing (HRB) in @xu2021hierarchically.
 
 ```{r}
 covbal <- function(X, Tr, Y, MB.only = FALSE) {
@@ -205,8 +216,8 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
   UB.weight[Tr == 1] <- sum(Tr == 1) * UB2.result$weight
   UB.ate <- t(UB.weight[Tr == 1] / sum(UB.weight[Tr == 1])) %*% Y[Tr == 1] - t(UB.weight[Tr == 0] / sum(UB.weight[Tr == 0])) %*% Y[Tr == 0]
   
-  HRB1.result <- HRB(covariate = X, treat = Tr, group1 = 1, outcome = Y)
-  HRB2.result <- HRB(covariate = X, treat = Tr, group1 = 0, outcome = Y)
+  HRB1.result <- HRB(covariate = X, treat = Tr, group1 = 0, outcome = Y)
+  HRB2.result <- HRB(covariate = X, treat = Tr, group1 = 1, outcome = Y)
   HRB.weight[Tr == 0] <- sum(Tr == 0) * HRB1.result$weight
   HRB.weight[Tr == 1] <- sum(Tr == 1) * HRB2.result$weight
   HRB.ate <- t(HRB.weight[Tr == 1] / sum(HRB.weight[Tr == 1])) %*% Y[Tr == 1] -   t(HRB.weight[Tr == 0] / sum(HRB.weight[Tr == 0])) %*% Y[Tr == 0]
@@ -253,7 +264,7 @@ si.data.Wong.Chan <- function(dimension = 10 , sample.size = 200){
 The second simulation will be Scenario B in our paper.
 
 ```{r}
-si.data.interaction <- function(dimension = 18, sample.size = 200){
+si.data.interaction <- function(dimension = 10, sample.size = 200){
   sample.matrix        <- matrix(0 , sample.size , dimension + (dimension*(dimension+1)/2 + 4))
   covariance.matrix.A  <- matrix(0 , dimension , dimension)
   covariance.matrix.B  <- matrix(0 , dimension , dimension)
@@ -273,8 +284,8 @@ si.data.interaction <- function(dimension = 18, sample.size = 200){
     }
     sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 1)] <- p
     temp <- rnorm(1)
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] <- 2 * sum(z) + 2*(z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[11]+z[11]*z[12]+z[12]*z[13]+z[13]*z[14]+z[14]*z[15]+z[15]*z[16]+z[16]*z[17]+z[17]*z[18]+z[18]*z[1])
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)] <- 1 * sum(z) + (z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[11]+z[11]*z[12]+z[12]*z[13]+z[13]*z[14]+z[14]*z[15]+z[15]*z[16]+z[16]*z[17]+z[17]*z[18]+z[18]*z[1])
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] <- 2 * sum(z) + 2*(z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[1])
+    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)] <- 1 * sum(z) + (z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[1])
     sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 2)] <- p *   sample.matrix[i,(dimension + dimension*(dimension+1)/2 + 3)] + (1 - p) * sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 4)] + temp
   }
   true_Y <- mean(sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] - sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)])
@@ -313,9 +324,9 @@ si.data.extreme_sample_size <- function(dimension = 10, sample.size = 1000) {
 }
 ```
 
-We repeat 200 times.
+We repeat 1 time. If you want to simulate more data, please modify `mainf1(1)` to `mainf1(200)`.
 
-```{r}
+```{r, message=FALSE}
 mainf1 <- function(iteration = 1000) {
   result1 <- matrix(0, iteration, 8)
   result2 <- matrix(0, iteration, 8)
@@ -333,13 +344,11 @@ mainf1 <- function(iteration = 1000) {
     result4[i, ] <- covbal(data4$X, data4$treat, data4$Y)$ate
     data2Y[i] <- data2$true_Y
   }
-  return(list(Wong.Chan = colMeans(result1), si.data.interaction = colMeans(result2) - mean(data2Y), extreme.mean.diff = colMeans(result3) - 5, extreme_sample_size = colMeans(result4) - 10))
+  return(list(Wong.Chan.bias = colMeans(result1), si.data.interaction.bias = colMeans(result2) - mean(data2Y), extreme.mean.diff.bias = colMeans(result3) - 5, extreme_sample_size.bias = colMeans(result4) - 10))
 }
 
 set.seed(1124)
 mainf1(1)
 ```
-
-We can find that our method has lower bias than other methods because our purposed method has significantly lower imbalance and thus greatly outperforms other methods.
 
 # References

@@ -1,7 +1,7 @@
 Package: ACBalancing
 Type: Package
 Title: Approximate Covariate Balancing
-Version: 0.1.0
+Version: 1.0.0
 Author: Yimin Dai
 Maintainer: Yimin Dai <yimindai1999@tamu.edu>
 Description: The R package ACBalancing implements several approximate balancing 

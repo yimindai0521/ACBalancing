@@ -4,76 +4,68 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>package_intro • ACBalancing</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="ACBalancing">
+<title>A Brief Introduction to ACBalancing • ACBalancing</title>
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="package_intro">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="A Brief Introduction to ACBalancing">
 <meta property="og:description" content="ACBalancing">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">ACBalancing</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
-      </span>
-    </div>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">ACBalancing</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../reference/index.html">Reference</a>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/package_intro.html">package_intro</a>
-    </li>
-  </ul>
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/package_intro.html">A Brief Introduction to ACBalancing</a>
+  </div>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav"></ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>package_intro</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="" class="logo" alt=""><h1>A Brief Introduction to ACBalancing</h1>
             
       
       
-      <div class="hidden name"><code>package_intro.Rmd</code></div>
-
+      <div class="d-none name"><code>package_intro.Rmd</code></div>
     </div>
 
     
@@ -84,43 +76,36 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Consider a random sample of <span class="math inline">\(n\)</span>
-individuals from a population. Let <span class="math inline">\(T\)</span> be a binary treatment indicator with
-<span class="math inline">\(T=1\)</span> if the individual is treated
-and <span class="math inline">\(T=0\)</span> otherwise. Let <span class="math inline">\(X=\left(X_1, \cdots, X_p\right)^{\top}\)</span> be
-a <span class="math inline">\(p\)</span>-dimensional vector of
-pre-treatment covariates. Let <span class="math inline">\(Y\)</span> be
-the binary outcome. The observed data are <span class="math inline">\(\left\{\left(X_i, T_i, Y_i\right): i=1, \cdots,
-n\right\}\)</span>, which are <span class="math inline">\(n\)</span>
-independent and identically distributed triples <span class="math inline">\((X, T, Y)\)</span>. Under the potential outcome
-framework <span class="citation">Imbens and Rubin (2015)</span>, we
-define a pair of potential outcomes <span class="math inline">\(\{Y(0),
-Y(1)\}\)</span> for each individual if he/she were not treated or
-treated. The observed outcome is defined as <span class="math inline">\(Y=(1-T) Y(0)+T Y(1)\)</span>.</p>
+individuals from a population.</p>
+<p>Under the potential outcome framework (<span class="citation">Imbens
+and Rubin (2015)</span>), we define a pair of potential outcomes <span class="math inline">\(\{Y(0), Y(1)\}\)</span> for each individual if
+he/she were not treated or treated. The observed outcome is defined as
+<span class="math inline">\(Y=(1-T) Y(0)+T Y(1)\)</span>.</p>
 <p>The causal estimand of interest is the average treatment effect
 (ATE), defined by <span class="math inline">\(\tau=E\{Y(1)-Y(0)\}=\mu_1-\mu_0\)</span>, where
 <span class="math inline">\(\mu_j=E\{Y(j)\}, j=0,1\)</span>. The
-proposed method can be changed to other causal estimands, e.g., average
-treatment effect on the treated (ATT). Under the strong ignorability and
-overlap assumption <span class="citation">Imbens and Rubin
-(2015)</span>, we can show that <span class="math inline">\(\mu_1=E\left\{\mu_1(X)\right\} =
+proposed method can be changed to other causal estimands, e.g., the
+average treatment effect on the treated (ATT). Under the strong
+ignorability and overlap assumption <span class="citation">Imbens and
+Rubin (2015)</span>, we can show that <span class="math inline">\(\mu_1=E\left\{\mu_1(X)\right\} =
 E\left\{\frac{TY}{Pr(T = 1 \mid X)}\right\}\)</span> and <span class="math inline">\(\mu_0=E\left\{\mu_0(X)\right\} =
 E\left\{\frac{(1-T)Y}{Pr(T = 0 \mid X)}\right\}\)</span>. Therefore, we
 can estimate <span class="math inline">\(\mu_1\)</span> by estimating
 propensity score <span class="math inline">\(Pr(T = 1 \mid
-X)}\)</span>.</p>
+X)\)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
 </h2>
 <p>The goal for propensity score <span class="math inline">\(Pr(T = 1
-\mid X)}\)</span> is to balance the covariate, i.e, <span class="math display">\[E\left\{\frac{Tf(X)}{Pr(T = 1 \mid X)}\right\} =
+\mid X)\)</span> is to balance the covariate, i.e, <span class="math display">\[E\left\{\frac{Tf(X)}{Pr(T = 1 \mid X)}\right\} =
 E\left\{Tf(X)\right\}\]</span> where <span class="math inline">\(f(X)\)</span> is a function of <span class="math inline">\(X\)</span>.</p>
-<p>In finite sample, the above formula is <span class="math display">\[\sum_{i=1}^{n}\frac{T_if(X_i)}{\hat{Pr}(T = 1
-\mid X_i)} = \sum_{i=1}^{n}f(X_i)\]</span> This motivates covariate
-balancing method, that is, we directly balance covariate instead of
-estimating propensity score method. The most well-known method is
-entropy balancing <span class="citation">Hainmueller (2012)</span> and
-stable weighting <span class="citation">Zubizarreta (2015)</span>.</p>
+<p>In finite sample, the above formula is <span class="math display">\[
+\sum_{i=1}^{n}\frac{T_if(X_i)}{\hat{Pr}(T = 1 \mid X_i)} =
+\sum_{i=1}^{n}f(X_i)
+\]</span> This motivates the covariate balancing method, and we directly
+balance covariates instead of estimating the propensity score method.
+The most well-known way is entropy balancing (<span class="citation">Hainmueller (2012)</span>) and stable weighting (<span class="citation">Zubizarreta (2015)</span>).</p>
 <p><span class="math display">\[
 \begin{array}{ll}
 \underset{\boldsymbol{w}}{\operatorname{minimize}} &amp; \sum_{i=1}^{n}
@@ -135,14 +120,14 @@ T_if(w_i) \\
 balancing.</p>
 <p>However, the exact balancing condition (<span class="math inline">\(\sum_{i=1}^{n}\boldsymbol{w_iT_i}
 \boldsymbol{f(X)} = \sum_{i=1}^{n}f(X_i) / n\)</span>) may not hold in
-finite sample. We call this “Bad Overlap” situation when we cannot find
-a solution <span class="math inline">\(w\)</span> to fulfill the exact
-balancing condition. The “Bad Overlap” may happen when <span class="math inline">\(E\{Pr(T = 1 \mid X)\}\)</span> closes to 0 or 1,
+finite sample. We call this a “Bad Overlap” situation when we cannot
+find a solution <span class="math inline">\(w\)</span> to fulfill the
+exact balancing condition. The “Bad Overlap” may happen when <span class="math inline">\(E\{Pr(T = 1 \mid X)\}\)</span> closes to 0 or 1,
 <span class="math inline">\(E\{ X \mid T = 1\}\)</span> and <span class="math inline">\(E\{ X \mid T = 0\}\)</span> are significantly
 different or the covariate is high-dimensional.</p>
 <p>To alleviate the feasibility problem, <span class="citation">Wang and
 Zubizarreta (2020)</span> proposed minimal dispersion approximately
-balancing weights (MDABW) as an univariate approximate balancing
+balancing weights (MDABW) as a univariate approximate balancing
 framework, which relaxes the balancing conditions by using inequality
 constraints.</p>
 <p><span class="math display">\[
@@ -154,23 +139,24 @@ T_if(w_i) \\
 1,\cdots,d\\
 &amp; \boldsymbol{w} \succeq 0,
 \end{array}
-\]</span> There are other robust balancing methods which may not suffer
-the feasibility problem. <span class="citation">(<strong>xxu2021hierarchically?</strong>)</span>
-imposes ridge penalties in the optimization problem. <span class="citation">Wong and Chan (2018)</span> minimized covariate
+\]</span></p>
+<p>Other robust balancing methods may not suffer the feasibility
+problem. For example, <span class="citation">Xu and Yang (2021)</span>
+imposes ridge penalties in the optimization problem, and <span class="citation">Wong and Chan (2018)</span> minimizes covariate
 imbalance directly by the regularized kernel regression method.</p>
 <p>There is a potential issue with univariate approximate balancing. The
-unvariate balance does not guarantee overall balance, especially in the
-case of bad-overlap scenario, as shown in the numerical study. Another
-issue is that there is no principled way to select the threshold
-parameters simultaneously. Extension of MDABW to handle “Bad Overlap”
-issue remains an open work.</p>
-<p>Multivariate covariate balance can greatly help overcome the
+univariate balance does not guarantee overall balance, especially in the
+case of a bad-overlap scenario, as shown in the numerical study. Another
+issue is that there needs to be a moral way to select the threshold
+parameters simultaneously. Extension of MDABW to handle the “Bad
+Overlap” issue remains an open work.</p>
+<p>Multivariate covariate balance can significantly help overcome the
 limitations of univariate approximate balancing. Also, we provide a
 single threshold parameter attached to the quadratic inequality
-constraint in Mahalanobis balancing method, which greatly handles the
-issue of multiple threshold parameters. In practice, the Mahalanobis
-balancing method has good performance (low bias, small balancing
-diagnostics) especially in “Bad Overlap” situations.</p>
+constraint in the Mahalanobis balancing method, which dramatically
+handles the issue of multiple threshold parameters. In practice, the
+Mahalanobis balancing method performs well (low bias, small balancing
+diagnostics), especially in “Bad Overlap” situations.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Install the "ACBalancing" package from github.</span>
 <span class="co"># if (!require(c("devtools", "WeightIt", "MASS", "ATE.ncb"))){</span>
@@ -182,7 +168,7 @@ diagnostics) especially in “Bad Overlap” situations.</p>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ATE.ncb</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="get-started">Get Started<a class="anchor" aria-label="anchor" href="#get-started"></a>
+<h2 id="get-started-and-interpretation-of-parameter">Get Started and Interpretation of Parameter<a class="anchor" aria-label="anchor" href="#get-started-and-interpretation-of-parameter"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">0521</span><span class="op">)</span>
@@ -191,49 +177,38 @@ diagnostics) especially in “Bad Overlap” situations.</p>
 <span class="va">result2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span>, method <span class="op">=</span> <span class="st">"MB"</span><span class="op">)</span>
 <span class="va">result3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/UB.html">UB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, opti.method <span class="op">=</span> <span class="st">"proximal"</span><span class="op">)</span>
 <span class="va">result4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/UB.html">UB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, opti.method <span class="op">=</span> <span class="st">"proximal"</span><span class="op">)</span>
-<span class="va">result5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
-<span class="va">result6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
+<span class="va">result5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, second.moment <span class="op">=</span> <span class="cn">FALSE</span>, third.moment <span class="op">=</span> <span class="cn">FALSE</span>, interact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">result6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, second.moment <span class="op">=</span> <span class="cn">FALSE</span>, third.moment <span class="op">=</span> <span class="cn">FALSE</span>, interact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># estimating ATE</span>
-<span class="va">result1</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result2</span><span class="op">$</span><span class="va">AT</span>
+<span class="va">result1</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result2</span><span class="op">$</span><span class="va">AT</span> <span class="co"># produce an estimate of ATE using the Mahalanobis balancing method</span>
 <span class="co">#&gt;             [,1]</span>
 <span class="co">#&gt; [1,] -0.09062922</span>
-<span class="va">result3</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result4</span><span class="op">$</span><span class="va">AT</span>
+<span class="va">result3</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result4</span><span class="op">$</span><span class="va">AT</span> <span class="co"># produce an estimate of ATE using the Univariate Balancing method</span>
 <span class="co">#&gt;            [,1]</span>
 <span class="co">#&gt; [1,] -0.3050739</span>
-<span class="va">result5</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result6</span><span class="op">$</span><span class="va">AT</span>
+<span class="va">result5</span><span class="op">$</span><span class="va">AT</span> <span class="op">-</span> <span class="va">result6</span><span class="op">$</span><span class="va">AT</span> <span class="co"># produce an estimate of ATE using the Hierarchically Regularized Entropy Balancing method</span>
 <span class="co">#&gt;           [,1]</span>
-<span class="co">#&gt; [1,] -1.699096</span>
+<span class="co">#&gt; [1,] -1.214015</span>
 
 <span class="co"># parameter for propensity score (\beta_1-\beta_0)</span>
-<span class="va">result1</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result2</span><span class="op">$</span><span class="va">parameter</span>
-<span class="co">#&gt;  [1] -1.1518241 -1.0545769 -1.0520829 -1.0464248 -0.8595482 -0.9518586</span>
-<span class="co">#&gt;  [7] -1.1951607 -0.9784473 -0.7472358 -1.0972427</span>
-<span class="va">result3</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result4</span><span class="op">$</span><span class="va">parameter</span>
+<span class="va">result1</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result2</span><span class="op">$</span><span class="va">parameter</span> <span class="co"># produce an estimate of parameter in propensity score using the Mahalanobis balancing method</span>
+<span class="co">#&gt;  [1] -1.0681070 -0.9728243 -0.9707689 -0.9682386 -0.7953339 -0.8804608</span>
+<span class="co">#&gt;  [7] -1.1037095 -0.9024917 -0.6907932 -1.0139939</span>
+<span class="va">result3</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result4</span><span class="op">$</span><span class="va">parameter</span> <span class="co"># produce an estimate of parameter in propensity score using the Univariate Balancing method</span>
 <span class="co">#&gt;  [1] -1.0302661 -0.9437848 -0.9260702 -0.9018889 -0.7300226 -0.8570399</span>
 <span class="co">#&gt;  [7] -1.0816920 -0.8540281 -0.6279106 -0.9776652</span>
-<span class="va">result5</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result6</span><span class="op">$</span><span class="va">parameter</span>
-<span class="co">#&gt;  [1] -1.00822314 -0.88978320 -0.90945911 -0.85567497 -0.87569403 -0.80774895</span>
-<span class="co">#&gt;  [7] -1.22235684 -0.79016829 -0.73934671 -1.01794959  0.19432913  0.10708127</span>
-<span class="co">#&gt; [13]  0.02286443  0.44085498 -0.03203781  0.40795985  0.07075453  0.23114038</span>
-<span class="co">#&gt; [19] -0.20991753 -0.55456561  0.06471220  0.15484861  0.13962965  0.23039468</span>
-<span class="co">#&gt; [25]  0.26976979  0.37303730  0.19676246 -0.23523827  0.22430919  0.29292812</span>
-<span class="co">#&gt; [31]  0.23453506  0.09541227  0.04338214  0.18045949 -0.03662074 -0.30293394</span>
-<span class="co">#&gt; [37] -0.15193972  0.04465865  0.04105995 -0.08180647  0.33285409  0.32181753</span>
-<span class="co">#&gt; [43] -0.09391965 -0.12663696  0.14512927 -0.12718189  0.08379626 -0.10536265</span>
-<span class="co">#&gt; [49]  0.08454828  0.34582449  0.16244867  0.12432401 -0.02665074 -0.02894742</span>
-<span class="co">#&gt; [55] -0.15578071  0.11829491 -0.25354724  0.01291753  0.14667217 -0.12115149</span>
-<span class="co">#&gt; [61]  0.10876722 -0.19944861 -0.22414815  0.14515818  0.05456086 -0.58982041</span>
-<span class="co">#&gt; [67] -0.27003607 -0.42898200 -0.47544172 -0.14920329 -0.48618227 -0.22381181</span>
-<span class="co">#&gt; [73] -0.56679843 -0.12614355 -0.52749815</span>
+<span class="va">result5</span><span class="op">$</span><span class="va">parameter</span> <span class="op">-</span> <span class="va">result6</span><span class="op">$</span><span class="va">parameter</span> <span class="co"># produce an estimate of parameter in propensity score using the Hierarchically Regularized Entropy Balancing method</span>
+<span class="co">#&gt;  [1] -0.7823737 -0.6253329 -0.6463390 -0.6396690 -0.5601523 -0.6385387</span>
+<span class="co">#&gt;  [7] -0.7367610 -0.5859856 -0.4913990 -0.7211723</span>
 
 <span class="co"># Generalized Mahalobnis Imbalance Measure</span>
-<span class="va">result1</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result2</span><span class="op">$</span><span class="va">GMIM</span>
+<span class="va">result1</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result2</span><span class="op">$</span><span class="va">GMIM</span> <span class="co"># Generalized Mahalanobis Imbalance Measure for Mahalanobis balancing weights</span>
 <span class="co">#&gt; [1] 3.593262e-07</span>
-<span class="va">result3</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result4</span><span class="op">$</span><span class="va">GMIM</span>
+<span class="va">result3</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result4</span><span class="op">$</span><span class="va">GMIM</span> <span class="co"># Generalized Mahalanobis Imbalance Measure for Univariate Balancing weights</span>
 <span class="co">#&gt; [1] 0.01338146</span>
-<span class="va">result5</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result6</span><span class="op">$</span><span class="va">GMIM</span>
-<span class="co">#&gt; [1] 0.3609052</span></code></pre></div>
+<span class="va">result5</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result6</span><span class="op">$</span><span class="va">GMIM</span> <span class="co"># Generalized Mahalanobis Imbalance Measure for Hierarchically Regularized Entropy Balancing weights</span>
+<span class="co">#&gt; [1] 0.08557126</span></code></pre></div>
 <p>In function <code>si.data</code>, we generate the treatment
 assignment from the logistic regression model: <span class="math inline">\(Pr(T = 1 | X) = 1/ (1 + \exp(X_1 + ... +
 X_{10}))\)</span>. The ratio <span class="math inline">\(Pr(T = 1 | X) /
@@ -241,10 +216,14 @@ Pr(T = 0 | X) \text{ is } \exp(- X_1 - ... - X_{10})\)</span>.
 Similarly, Mahalanobis balancing assume the propensity score model is
 <span class="math inline">\(Pr(T = a | X) =
 \exp(\beta_a^{\top}X)\)</span>, then the ratio is <span class="math inline">\(Pr(T = 1 | X) / Pr(T = 0 | X) will be
-\exp((\beta_1-\beta_0)^{\top}X)\)</span>, see <span class="citation">Zhao (2019)</span> for more details. In simulation, our
+\exp((\beta_1-\beta_0)^{\top}X)\)</span>. If you want to learn more
+about the interpretation of parameter, please see <span class="citation">Zhao (2019)</span> for more details. In simulation, our
 result
-<code>result1$parameter - result2$parameter = (-1.07, -1.07, -1.02, -1.00,  -0.83, -0.95, -1.19, -0.96, -0.73, -1.06)</code>
-approximates to the true value <span class="math inline">\(-(1,1,1,1,1,1,1,1,1,1,1,1)\)</span>.</p>
+<code>result1$parameter - result2$parameter = (-1.07,-0.97,-0.97,-0.97,-0.80,-0.880,-1.10, -0.902,-0.69,-1.01)</code>,
+<code>result3$parameter - result4$parameter = (-1.03,-0.94,-0.93,-0.90,-0.73,-0.86,-1.08,-0.85,-0.63,-0.98)</code>
+and
+<code>result5$parameter - result6$parameter = (-0.78,-0.63,-0.65,-0.64,-0.56,-0.64,-0.74,-0.59,-0.49,-0.72)</code>
+approximate to the true value <span class="math inline">\(-(1,1,1,1,1,1,1,1,1,1,1,1)\)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="balancing-covariate-in-finite-sample">Balancing Covariate in Finite Sample<a class="anchor" aria-label="anchor" href="#balancing-covariate-in-finite-sample"></a>
@@ -257,8 +236,7 @@ generated from: <span class="math inline">\(Y(T) = (1 - T)(X_1 + ... +
 X_{10}) + T(X_1 + ... + X_{10}) / 2\)</span>. In this setting, <span class="math inline">\(E\{ X \mid T = 1\}\)</span> and <span class="math inline">\(E\{ X \mid T = 0\}\)</span> are significantly
 different and thus it’s a very “Bad Overlap” situation.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a></span><span class="op">)</span>
-<span class="va">si.data.imbal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sample.size</span> <span class="op">=</span> <span class="fl">500</span>, <span class="va">dimension</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">{</span>
+<code class="sourceCode R"><span class="va">si.data.imbal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sample.size</span> <span class="op">=</span> <span class="fl">500</span>, <span class="va">dimension</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">covmatrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">dimension</span>, <span class="va">dimension</span><span class="op">)</span>
   <span class="va">treat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">sample.size</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span>
   <span class="va">z1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">sample.size</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">dimension</span><span class="op">)</span>, Sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">dimension</span><span class="op">)</span><span class="op">)</span>
@@ -277,26 +255,30 @@ different and thus it’s a very “Bad Overlap” situation.</p>
 <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">treat</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, method <span class="op">=</span> <span class="st">"MB"</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span><span class="op">)</span><span class="op">$</span><span class="va">GMIM</span>
 <span class="co">#&gt; [1] 1.701903</span>
 
-<span class="co">## sample.size = 5000</span>
+<span class="co"># sample.size = 5000</span>
 <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">si.data.imbal</span><span class="op">(</span>sample.size <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span>
 <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">treat</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, method <span class="op">=</span> <span class="st">"MB"</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span><span class="op">)</span><span class="op">$</span><span class="va">GMIM</span>
 <span class="co">#&gt; [1] 0.003029487</span>
 <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">treat</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, method <span class="op">=</span> <span class="st">"MB"</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span><span class="op">)</span><span class="op">$</span><span class="va">GMIM</span>
 <span class="co">#&gt; [1] 0.03736832</span>
 
-<span class="co">## sample.size = 50000</span>
+<span class="co"># sample.size = 50000</span>
 <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">si.data.imbal</span><span class="op">(</span>sample.size <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>
 <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">treat</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, method <span class="op">=</span> <span class="st">"MB"</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span><span class="op">)</span><span class="op">$</span><span class="va">GMIM</span>
 <span class="co">#&gt; [1] 1.795213e-07</span>
 <span class="fu"><a href="../reference/MB.html">MB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span>, treat <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">treat</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">Y</span>, method <span class="op">=</span> <span class="st">"MB"</span>, opti.method <span class="op">=</span> <span class="st">"proximalC"</span><span class="op">)</span><span class="op">$</span><span class="va">GMIM</span>
 <span class="co">#&gt; [1] 1.298165e-07</span></code></pre></div>
-<p>When the sample size = 500, we find that GMIM is quite large and thus
-we not recommend to use MB method to estimate average treatment effect.
-MB method may not approximately balances covariate in finite sample in
-very ``Bad Overlap” setting. However, when the sample size = 5000, we
-find that GMIM is relatively small. Therefore, we can use the result
-that produced by MB method. When the GMIM is relatively small, we
-recommend to use MB method to estimate average treatment effect.</p>
+<p>When the sample size = 500, we find that GMIM is quite large, and
+thus we recommend using something other than the MB method to estimate
+the average treatment effect. MB method may not approximately balance
+covariates in the finite sample in very `` Bad Overlap” setting.
+However, when the sample size = 5000, we find that GMIM is relatively
+small. Therefore, we can use the result produced by the MB method. When
+the GMIM is relatively small, we recommend using the MB method to
+estimate the average treatment effect. Our method can handle some `` Bad
+Overlap” settings. However, it cannot solve the situation when it’s
+extreme ``Bad Overlap” in a finite sample. GMIM is a balancing measure
+to judge whether our approach can balance covariates.</p>
 </div>
 <div class="section level2">
 <h2 id="implementation-of-other-covariate-balancing-methods">Implementation of other covariate balancing methods<a class="anchor" aria-label="anchor" href="#implementation-of-other-covariate-balancing-methods"></a>
@@ -310,7 +292,9 @@ propensity score (cbps) in <span class="citation">Imai and Ratkovic
 (2014)</span>, energy balancing (energy) in <span class="citation">Huling and Mak (2020)</span>, minimal dispersion
 approximate balancing weights (UB) in <span class="citation">Wang and
 Zubizarreta (2020)</span>, kernel-based covariate balancing (kernel) in
-<span class="citation">Wong and Chan (2018)</span> and @.</p>
+<span class="citation">Wong and Chan (2018)</span> and hierarchically
+regularized entropy balancing (HRB) in <span class="citation">Xu and
+Yang (2021)</span>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">covbal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">X</span>, <span class="va">Tr</span>, <span class="va">Y</span>, <span class="va">MB.only</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">data.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">X</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Tr</span><span class="op">)</span><span class="op">)</span>
@@ -374,8 +358,8 @@ Zubizarreta (2020)</span>, kernel-based covariate balancing (kernel) in
   <span class="va">UB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">UB2.result</span><span class="op">$</span><span class="va">weight</span>
   <span class="va">UB.ate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">UB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">UB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">UB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">UB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span>
   
-  <span class="va">HRB1.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">X</span>, treat <span class="op">=</span> <span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">Y</span><span class="op">)</span>
-  <span class="va">HRB2.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">X</span>, treat <span class="op">=</span> <span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">Y</span><span class="op">)</span>
+  <span class="va">HRB1.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">X</span>, treat <span class="op">=</span> <span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">0</span>, outcome <span class="op">=</span> <span class="va">Y</span><span class="op">)</span>
+  <span class="va">HRB2.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HRB.html">HRB</a></span><span class="op">(</span>covariate <span class="op">=</span> <span class="va">X</span>, treat <span class="op">=</span> <span class="va">Tr</span>, group1 <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="va">Y</span><span class="op">)</span>
   <span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">*</span> <span class="va">HRB1.result</span><span class="op">$</span><span class="va">weight</span>
   <span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">HRB2.result</span><span class="op">$</span><span class="va">weight</span>
   <span class="va">HRB.ate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">-</span>   <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">HRB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span>
@@ -387,9 +371,6 @@ Zubizarreta (2020)</span>, kernel-based covariate balancing (kernel) in
   <span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">*</span> <span class="va">MB1.result</span><span class="op">$</span><span class="va">weight</span>
   <span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">MB2.result</span><span class="op">$</span><span class="va">weight</span>
   <span class="va">MB.ate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">MB.weight</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Y</span><span class="op">[</span><span class="va">Tr</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span>
-
-  
-  
 
   <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ps <span class="op">=</span> <span class="va">ps.weight</span>, ebal <span class="op">=</span> <span class="va">ebal.weight</span>, cbps <span class="op">=</span> <span class="va">cbps.weight</span>, energy <span class="op">=</span> <span class="va">energy.weight</span>, MB <span class="op">=</span> <span class="va">MB.weight</span>, UB <span class="op">=</span> <span class="va">UB.weight</span>, HRB <span class="op">=</span> <span class="va">HRB.weight</span><span class="op">)</span>, ate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>ps <span class="op">=</span> <span class="va">ps.ate</span>, ebal <span class="op">=</span> <span class="va">ebal.ate</span>, cbps <span class="op">=</span> <span class="va">cbps.ate</span>, energy <span class="op">=</span> <span class="va">energy.ate</span>, MB <span class="op">=</span> <span class="va">MB.ate</span>, UB <span class="op">=</span> <span class="va">UB.ate</span>, HRB <span class="op">=</span> <span class="va">HRB.ate</span>, kernel <span class="op">=</span> <span class="va">kernel.ate</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
@@ -420,7 +401,7 @@ Zubizarreta (2020)</span>, kernel-based covariate balancing (kernel) in
 <span class="op">}</span></code></pre></div>
 <p>The second simulation will be Scenario B in our paper.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">si.data.interaction</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dimension</span> <span class="op">=</span> <span class="fl">18</span>, <span class="va">sample.size</span> <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">{</span>
+<code class="sourceCode R"><span class="va">si.data.interaction</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dimension</span> <span class="op">=</span> <span class="fl">10</span>, <span class="va">sample.size</span> <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">{</span>
   <span class="va">sample.matrix</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span> , <span class="va">sample.size</span> , <span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
   <span class="va">covariance.matrix.A</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span> , <span class="va">dimension</span> , <span class="va">dimension</span><span class="op">)</span>
   <span class="va">covariance.matrix.B</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span> , <span class="va">dimension</span> , <span class="va">dimension</span><span class="op">)</span>
@@ -440,8 +421,8 @@ Zubizarreta (2020)</span>, kernel-based covariate balancing (kernel) in
     <span class="op">}</span>
     <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span>
     <span class="va">temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-    <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">11</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">11</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">13</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">13</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">14</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">14</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">15</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">15</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">16</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">16</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">17</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">17</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">18</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">18</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-    <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">11</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">11</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">13</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">13</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">14</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">14</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">15</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">15</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">16</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">16</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">17</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">17</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">18</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">18</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">+</span><span class="va">z</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">*</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
     <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">2</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">*</span>   <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="op">(</span><span class="va">dimension</span> <span class="op">+</span> <span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span> <span class="op">*</span> <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span> <span class="op">+</span> <span class="va">temp</span>
   <span class="op">}</span>
   <span class="va">true_Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op">-</span> <span class="va">sample.matrix</span><span class="op">[</span><span class="va">i</span>,<span class="va">dimension</span> <span class="op">+</span> <span class="op">(</span><span class="va">dimension</span><span class="op">*</span><span class="op">(</span><span class="va">dimension</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>  <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
@@ -486,7 +467,8 @@ or 1 and thus it’s a “Bad Overlap” situation.</p>
   <span class="va">Y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">treat</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">sum</span><span class="op">)</span> <span class="op">+</span> <span class="va">noise</span>
   <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">X</span>, treat <span class="op">=</span> <span class="va">treat</span>, Y <span class="op">=</span> <span class="va">Y</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
-<p>We repeat 200 times.</p>
+<p>We repeat 1 time. If you want to simulate more data, please modify
+<code>mainf1(1)</code> to <code>mainf1(200)</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mainf1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iteration</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">result1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">iteration</span>, <span class="fl">8</span><span class="op">)</span>
@@ -505,43 +487,30 @@ or 1 and thus it’s a “Bad Overlap” situation.</p>
     <span class="va">result4</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">covbal</span><span class="op">(</span><span class="va">data4</span><span class="op">$</span><span class="va">X</span>, <span class="va">data4</span><span class="op">$</span><span class="va">treat</span>, <span class="va">data4</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span><span class="op">$</span><span class="va">ate</span>
     <span class="va">data2Y</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">data2</span><span class="op">$</span><span class="va">true_Y</span>
   <span class="op">}</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Wong.Chan <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result1</span><span class="op">)</span>, si.data.interaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data2Y</span><span class="op">)</span>, extreme.mean.diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result3</span><span class="op">)</span> <span class="op">-</span> <span class="fl">5</span>, extreme_sample_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result4</span><span class="op">)</span> <span class="op">-</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Wong.Chan.bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result1</span><span class="op">)</span>, si.data.interaction.bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data2Y</span><span class="op">)</span>, extreme.mean.diff.bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result3</span><span class="op">)</span> <span class="op">-</span> <span class="fl">5</span>, extreme_sample_size.bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">result4</span><span class="op">)</span> <span class="op">-</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1124</span><span class="op">)</span>
 <span class="fu">mainf1</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 0] &lt;- sum(Tr == 0) * HRB1.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 1] &lt;- sum(Tr == 1) * HRB2.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 0] &lt;- sum(Tr == 0) * HRB1.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 1] &lt;- sum(Tr == 1) * HRB2.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; Warning: Some extreme weights were generated. Examine them with summary() and</span>
-<span class="co">#&gt; maybe trim them with trim().</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 0] &lt;- sum(Tr == 0) * HRB1.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; Warning in HRB.weight[Tr == 1] &lt;- sum(Tr == 1) * HRB2.result$weight: number of</span>
-<span class="co">#&gt; items to replace is not a multiple of replacement length</span>
-<span class="co">#&gt; $Wong.Chan</span>
-<span class="co">#&gt; [1]  5.3004208  2.4444747  2.8750008  2.9264136  1.2737122  1.7000496 -1.9583171</span>
+<span class="co">#&gt; Warning: Some weights were estimated as NA, which means a value was impossible</span>
+<span class="co">#&gt; to compute (e.g., Inf). Check for extreme values of the treatment or covariates</span>
+<span class="co">#&gt; and try removing them. Non-finite weights will be set to 0.</span>
+<span class="co">#&gt; Warning: All weights are NA or 0 in treatment group '1'.</span>
+<span class="co">#&gt; $Wong.Chan.bias</span>
+<span class="co">#&gt; [1]  5.3004208  2.4444747  2.8750008  2.9264136  1.2737122  1.6400196  1.1923968</span>
 <span class="co">#&gt; [8] -0.2689073</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $si.data.interaction</span>
-<span class="co">#&gt; [1]        NA        NA        NA        NA -13.29253        NA        NA</span>
+<span class="co">#&gt; $si.data.interaction.bias</span>
+<span class="co">#&gt; [1]        NA        NA        NA        NA -24.12616        NA        NA</span>
 <span class="co">#&gt; [8]        NA</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $extreme.mean.diff</span>
-<span class="co">#&gt; [1] 10.7574142  0.2603409  5.4738226  2.5315788  0.9648591  3.4998624 13.3972192</span>
-<span class="co">#&gt; [8] 10.4897987</span>
+<span class="co">#&gt; $extreme.mean.diff.bias</span>
+<span class="co">#&gt; [1] 10.731793       NaN 10.740260  4.210726  2.707585  4.075793 11.788605</span>
+<span class="co">#&gt; [8] 12.390622</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $extreme_sample_size</span>
-<span class="co">#&gt; [1]  2.0218650 -0.4265015 -0.5220827 -1.4284431 -0.9795952 -1.1600474 -8.4717449</span>
-<span class="co">#&gt; [8] -1.7253433</span></code></pre></div>
-<p>We can find that our method has lower bias than other methods because
-our purposed method has significantly lower imbalance and thus greatly
-outperforms other methods.</p>
+<span class="co">#&gt; $extreme_sample_size.bias</span>
+<span class="co">#&gt; [1] -2.6801596  0.1903877 -0.5456419 -1.5712290 -0.3259745 -1.0324866 -0.5009698</span>
+<span class="co">#&gt; [8] -2.0499373</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -587,6 +556,10 @@ Wong, Raymond KW, and Kwun Chuen Gary Chan. 2018. <span>“Kernel-Based
 Covariate Functional Balancing for Observational Studies.”</span>
 <em>Biometrika</em> 105 (1): 199–213.
 </div>
+<div id="ref-xu2021hierarchically" class="csl-entry">
+Xu, Yiqing, and Eddie Yang. 2021. <span>“Hierarchically Regularized
+Entropy Balancing.”</span> <em>Available at SSRN 3807620</em>.
+</div>
 <div id="ref-zhao2019covariate" class="csl-entry">
 Zhao, Qingyuan. 2019. <span>“Covariate Balancing Propensity Score by
 Tailored Loss Functions.”</span> <em>The Annals of Statistics</em> 47
@@ -599,33 +572,26 @@ American Statistical Association</em> 110 (511): 910–22.
 </div>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
 <p>Developed by Yimin Dai.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-
 
   
 
