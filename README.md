@@ -28,27 +28,27 @@ We illustrate the usage of MBalance package using simple datasets.
 ``` r
 set.seed(0521)
 data <- si.data()
-result1 <- MB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
-result2 <- MB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
-result3 <- UB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y)
-result4 <- UB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y)
+result1 <- MB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, opti.method = "proximalC", method = "MB")
+result2 <- MB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, opti.method = "proximalC", method = "MB")
+result3 <- UB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, opti.method = "proximal")
+result4 <- UB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, opti.method = "proximal")
 result5 <- HRB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, second.moment = FALSE, third.moment = FALSE, interact = FALSE)
 result6 <- HRB(covariate = data$X, treat = data$Tr, group1 = 0, outcome = data$Y, second.moment = FALSE, third.moment = FALSE, interact = FALSE)
 
 # estimating ATE
-result1$AT - result2$AT
-result3$AT - result4$AT
-result5$AT - result6$AT
+result1$AT - result2$AT # produce an estimate of ATE using the Mahalanobis balancing method
+result3$AT - result4$AT # produce an estimate of ATE using the Univariate Balancing method
+result5$AT - result6$AT # produce an estimate of ATE using the Hierarchically Regularized Entropy Balancing method
 
-# parameter difference for propensity score
-result1$parameter - result2$parameter
-result3$parameter - result4$parameter
-result5$parameter - result6$parameter
+# parameter for propensity score (\beta_1-\beta_0)
+result1$parameter - result2$parameter # produce an estimate of parameter in propensity score using the Mahalanobis balancing method
+result3$parameter - result4$parameter # produce an estimate of parameter in propensity score using the Univariate Balancing method
+result5$parameter - result6$parameter # produce an estimate of parameter in propensity score using the Hierarchically Regularized Entropy Balancing method
 
 # Generalized Mahalobnis Imbalance Measure
-result1$GMIM + result2$GMIM
-result3$GMIM + result4$GMIM
-result5$GMIM + result6$GMIM
+result1$GMIM + result2$GMIM # Generalized Mahalanobis Imbalance Measure for Mahalanobis balancing weights
+result3$GMIM + result4$GMIM # Generalized Mahalanobis Imbalance Measure for Univariate Balancing weights
+result5$GMIM + result6$GMIM # Generalized Mahalanobis Imbalance Measure for Hierarchically Regularized Entropy Balancing weights
 ```
 
 For more details, please check website: https://yimindai0521.github.io/ACBalancing.
