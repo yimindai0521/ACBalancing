@@ -17,11 +17,16 @@
 #' \item This function is feasible when there are more than two groups.
 #' }
 #'
-#' @param covariate covariate.
-#' @param treat treatment indicator vector.
-#' @param group1 see Details.
-#' @param group2 see Details. Default: NA.
-#' @param method a string that takes values in {"MB", "MB2"}, Default: 'MB'.
+#' \code{method} can be a valid string, including
+#' \itemize{
+#' \item "MB": We choose the weighting matrix \eqn{{W}_1=[diag(\hat{\Sigma})]^{-1}}
+#' where \eqn{\hat{\Sigma}} denotes sample covariance matrix.
+#' \item "MB2": We choose the weighting matrix \eqn{{W}_2={[\hat{\Sigma}]^{-1}}}
+#' where \eqn{\hat{\Sigma}} denotes sample covariance matrix.
+#' }
+#'
+#' @inheritParams MB
+#' @param method a string that takes values in {"MB", "MB2"}, See details. Default: "MB".
 #' @rdname CholMB
 CholMB <- function(covariate, treat, group1, group2 = NA, method = "MB") {
 

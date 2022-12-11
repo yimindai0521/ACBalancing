@@ -46,7 +46,7 @@ a MB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 \item{weight:}{ the estimated Mahalanobis balancing weight.}
-\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper (Dai, Y., & Yan, Y. (2022).).}
 \item{delta:}{ the tuning parameter we choose.}
 }
 }

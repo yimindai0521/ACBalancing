@@ -46,7 +46,7 @@ a UB object with the following attributes:
 \itemize{
 \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 \item{weight:}{ the estimated univariate balancing weight.}
-\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
+\item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper (Dai, Y., & Yan, Y. (2022).).}
 \item{delta:}{ the tuning parameter we choose.}
 }
 }
@@ -98,4 +98,6 @@ result3$AT - mean(data$Y[data$Tr == 0])
 }
 \references{
 Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations, \emph{Biometrika} \strong{107(1), 93-105.}, \doi{10.1093/biomet/asz050}.
+
+Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
 }

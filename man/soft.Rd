@@ -2,20 +2,20 @@
 % Please edit documentation in R/soft.R
 \name{soft}
 \alias{soft}
-\title{soft}
+\title{soft function}
 \usage{
 soft(vt, lambda, norm = "square-l2")
 }
 \arguments{
-\item{vt}{input for proximal operator}
+\item{vt}{input for proximal operator, it should be a vector.}
 
-\item{lambda}{threshold}
+\item{lambda}{threshold for proximal operator, it should be positive.}
 
-\item{norm}{norm type}
+\item{norm}{norm type, it should take values in c("square-l2", "l1").}
 }
 \value{
 soft_value output for proximal operator
 }
 \description{
-proximal operator for l_1 norm and l_2 norm
+proximal operator for \eqn{l_1} norm and \eqn{l_2} norm
 }

@@ -7,15 +7,15 @@
 CholMB(covariate, treat, group1, group2 = NA, method = "MB")
 }
 \arguments{
-\item{covariate}{covariate.}
+\item{covariate}{Covariates, it should be a n by d matrix where n is sample size and d is dimension.}
 
-\item{treat}{treatment indicator vector.}
+\item{treat}{The vector of treatment assignments, it should be a vector of length n.}
 
-\item{group1}{see Details.}
+\item{group1}{group1 is a number, see Details.}
 
-\item{group2}{see Details. Default: NA.}
+\item{group2}{group2 is a number, see Details, Default: NULL.}
 
-\item{method}{a string that takes values in {"MB", "MB2"}, Default: 'MB'.}
+\item{method}{a string that takes values in {"MB", "MB2"}, See details. Default: "MB".}
 }
 \description{
 Function to decompose weighting matrix.
@@ -34,5 +34,13 @@ average treatment effect on the treated group \eqn{E(Y (0) | T = 1)},
 you need to set \code{group1} = 0 and \code{group2} = 1.
 
 \item This function is feasible when there are more than two groups.
+}
+
+\code{method} can be a valid string, including
+\itemize{
+\item "MB": We choose the weighting matrix \eqn{{W}_1=[diag(\hat{\Sigma})]^{-1}}
+where \eqn{\hat{\Sigma}} denotes sample covariance matrix.
+\item "MB2": We choose the weighting matrix \eqn{{W}_2={[\hat{\Sigma}]^{-1}}}
+where \eqn{\hat{\Sigma}} denotes sample covariance matrix.
 }
 }

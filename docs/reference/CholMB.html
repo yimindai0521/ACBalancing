@@ -54,23 +54,23 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>covariate</dt>
-<dd><p>covariate.</p></dd>
+<dd><p>Covariates, it should be a n by d matrix where n is sample size and d is dimension.</p></dd>
 
 
 <dt>treat</dt>
-<dd><p>treatment indicator vector.</p></dd>
+<dd><p>The vector of treatment assignments, it should be a vector of length n.</p></dd>
 
 
 <dt>group1</dt>
-<dd><p>see Details.</p></dd>
+<dd><p>group1 is a number, see Details.</p></dd>
 
 
 <dt>group2</dt>
-<dd><p>see Details. Default: NA.</p></dd>
+<dd><p>group2 is a number, see Details, Default: NULL.</p></dd>
 
 
 <dt>method</dt>
-<dd><p>a string that takes values in "MB", "MB2", Default: 'MB'.</p></dd>
+<dd><p>a string that takes values in "MB", "MB2", See details. Default: "MB".</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -84,6 +84,10 @@ you need to set <code>group1</code> = 1 and <code>group2</code> = 0. Similarly, 
 average treatment effect on the treated group \(E(Y (0) | T = 1)\),
 you need to set <code>group1</code> = 0 and <code>group2</code> = 1.</p></li>
 <li><p>This function is feasible when there are more than two groups.</p></li>
+</ul><p><code>method</code> can be a valid string, including</p><ul><li><p>"MB": We choose the weighting matrix \({W}_1=[diag(\hat{\Sigma})]^{-1}\)
+where \(\hat{\Sigma}\) denotes sample covariance matrix.</p></li>
+<li><p>"MB2": We choose the weighting matrix \({W}_2={[\hat{\Sigma}]^{-1}}\)
+where \(\hat{\Sigma}\) denotes sample covariance matrix.</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

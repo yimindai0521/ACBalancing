@@ -17,16 +17,14 @@
 #' \itemize{
 #' \item{AT:}{ the estimate of average treatment effect in group1 (i.e, \eqn{E(Y(group1))}).}
 #' \item{weight:}{ the estimated univariate balancing weight.}
-#' \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper.}
-#' \item{MAE:}{ Mean Absolute Error.}
+#' \item{GMIM:}{ Generalized Multivariate Imbalance Measure that defines in our paper (Dai, Y., & Yan, Y. (2022).).}
+#' \item{MAE:}{ Mean Absolute Error that defines in (Xu, Y., & Yang, E. (2021)).}
 #' \item{alpha:}{ the tuning parameter we choose.}
 #' }
 #'
 #' @rdname HRB
-#' @references Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
-#' \emph{Political Analysis}
-#' \strong{forthcoming},
-#' \doi{10.2139/ssrn.3807620}.
+#' @references Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing. \emph{Political Analysis}, \strong{forthcoming}, \doi{10.2139/ssrn.3807620}.
+#' @references Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
 #'
 #' @export
 #'
