@@ -74,11 +74,14 @@ There is a potential issue with univariate approximate balancing. The univariate
 Multivariate covariate balance can significantly help overcome the limitations of univariate approximate balancing. Also, we provide a single threshold parameter attached to the quadratic inequality constraint in the Mahalanobis balancing method, which dramatically handles the issue of multiple threshold parameters. In practice, the Mahalanobis balancing method performs well (low bias, small balancing diagnostics), especially in "Bad Overlap" situations.
 
 ```{r}
-# Install the "ACBalancing" package from github.
-# if (!require(c("devtools", "WeightIt", "MASS", "ATE.ncb"))){
-#     install.packages(c("devtools", "WeightIt", "MASS", "ATE.ncb"))
-# }
-# devtools::install_github("yimindai0521/ACBalancing")
+# Install the "ACBalancing" and other required package from github.
+if(!require(devtools, quietly = TRUE)){ install.packages("devtools")}
+if(!require(WeightIt, quietly = TRUE)){ install.packages("WeightIt")}
+if(!require(MASS, quietly = TRUE)){ install.packages("MASS")}
+if(!require(CBPS, quietly = TRUE)){ install.packages("CBPS")}
+if(!require(ATE.ncb, quietly = TRUE)){ devtools::install_github("raymondkww/ATE.ncb")}
+if(!require(ACBalancing, quietly = TRUE)){ devtools::install_github("yimindai0521/ACBalancing")}
+
 library(WeightIt)
 library(MASS)
 library(ATE.ncb)
@@ -147,7 +150,7 @@ MB(covariate = data$X, treat = data$treat, group1 = 1, outcome = data$Y, method 
 MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method = "MB", opti.method = "proximalC")$GMIM
 ```
 
-When the sample size = 500, we find that GMIM is quite large, and thus we recommend using something other than the MB method to estimate the average treatment effect. MB method may not approximately balance covariates in the finite sample in very \`\` Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result produced by the MB method. When the GMIM is relatively small, we recommend using the MB method to estimate the average treatment effect. Our method can handle some \`\` Bad Overlap" settings. However, it cannot solve the situation when it's extreme \`\`Bad Overlap" in a finite sample. GMIM is a balancing measure to judge whether our approach can balance covariates.
+When the sample size = 500, we find that GMIM is quite large, and thus we recommend using something other than the MB method to estimate the average treatment effect. MB method may not approximately balance covariates in the finite sample in very \`\` Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result produced by the MB method. When the GMIM is relatively small, we recommend using the MB method to estimate the average treatment effect. Our method can handle some \`\` Bad Overlap" settings. However, it cannot solve the situation when it's extreme \`\`Bad Overlap" in a finite sample. GMIM is a balancing measure to judge whether our approach can approximately balance covariates.
 
 # Implementation of other covariate balancing methods
 
@@ -326,7 +329,7 @@ si.data.extreme_sample_size <- function(dimension = 10, sample.size = 1000) {
 
 We repeat 1 time. If you want to simulate more data, please modify `mainf1(1)` to `mainf1(200)`.
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 mainf1 <- function(iteration = 1000) {
   result1 <- matrix(0, iteration, 8)
   result2 <- matrix(0, iteration, 8)
@@ -348,7 +351,7 @@ mainf1 <- function(iteration = 1000) {
 }
 
 set.seed(1124)
-mainf1(1)
+#mainf1(1)
 ```
 
 # References
