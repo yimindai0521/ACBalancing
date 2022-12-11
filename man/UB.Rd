@@ -13,9 +13,7 @@ UB(
   opti.method = c("BFGS", "proximal"),
   delta.space = c(1e-04, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1),
   iterations = 1000,
-  convergence = 10^{
-     -8
- },
+  convergence = 1e-08,
   rate = 10,
   bootstrap.time = 1000
 )
@@ -53,7 +51,7 @@ a UB object with the following attributes:
 }
 }
 \description{
-Univariate Balancing is a univariate perspective of
+Univariate Balancing (Wang, Y., & Zubizarreta, J. R. (2020)) is a univariate perspective of
 approximate covariate balancing method to estimate average treatment
 effect.
 }
@@ -97,4 +95,7 @@ result3 <- UB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y)
 # an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])
 
+}
+\references{
+Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations, \emph{Biometrika} \strong{107(1), 93-105.}, \doi{10.1093/biomet/asz050}.
 }

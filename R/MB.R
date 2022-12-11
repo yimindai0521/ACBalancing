@@ -53,9 +53,7 @@
 #' \item{delta:}{ the tuning parameter we choose.}
 #' }
 #'
-#' @references
-#' Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective
-#' on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
+#' @references Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
 #'
 #' @examples
 #' # estimating ATE

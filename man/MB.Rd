@@ -14,9 +14,7 @@ MB(
   method = c("MB", "MB2", "kernelMB"),
   delta.space = c(0.1, 0.05, 0.01, 0.005, 0.001),
   iterations = 1000,
-  convergence = 10^{
-     -8
- },
+  convergence = 1e-08,
   rate = 10
 )
 }
@@ -53,7 +51,7 @@ a MB object with the following attributes:
 }
 }
 \description{
-Mahalanobis balancing is a multivariate perspective of
+Mahalanobis balancing (Dai, Y., & Yan, Y. (2022).) is a multivariate perspective of
 approximate covariate balancing method to estimate average treatment
 effect.
 }
@@ -107,4 +105,7 @@ result3 <- MB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y)
 # an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])
 
+}
+\references{
+Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
 }

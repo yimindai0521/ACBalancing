@@ -12,9 +12,7 @@ HRB(
   outcome,
   alpha.space = c(0.1, 0.05, 0.01, 0.005, 0.001),
   iterations = 1000,
-  convergence = 10^{
-     -10
- },
+  convergence = 1e-08,
   cv.fold = 5,
   second.moment = TRUE,
   third.moment = TRUE,
@@ -82,4 +80,10 @@ result3 <- HRB(covariate = X, treat = treat, group1 = 1, group2 = 0, outcome = Y
 
 # an estimate of ATC
 result3$AT - mean(data$Y[data$Tr == 0])
+}
+\references{
+Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
+\emph{Political Analysis}
+\strong{forthcoming},
+\doi{10.2139/ssrn.3807620}.
 }

@@ -23,8 +23,7 @@
 #' }
 #'
 #' @rdname HRB
-#' @references
-#' Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
+#' @references Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
 #' \emph{Political Analysis}
 #' \strong{forthcoming},
 #' \doi{10.2139/ssrn.3807620}.

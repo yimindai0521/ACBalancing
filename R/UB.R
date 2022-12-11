@@ -37,12 +37,7 @@
 #'
 #' @rdname UB
 #'
-#' @references
-#' Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately
-#' balancing weights: asymptotic properties and practical considerations,
-#' \emph{Biometrika}
-#' \strong{107(1), 93-105.},
-#' \doi{10.1093/biomet/asz050}.
+#' @references Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations, \emph{Biometrika} \strong{107(1), 93-105.}, \doi{10.1093/biomet/asz050}.
 #'
 #' @export
 #'
