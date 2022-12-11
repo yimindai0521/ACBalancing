@@ -75,16 +75,33 @@ Multivariate covariate balance can significantly help overcome the limitations o
 
 ```{r}
 # Install the "ACBalancing" and other required package from github.
-if(!require(devtools, quietly = TRUE)){ install.packages("devtools")}
-if(!require(WeightIt, quietly = TRUE)){ install.packages("WeightIt")}
-if(!require(MASS, quietly = TRUE)){ install.packages("MASS")}
-if(!require(CBPS, quietly = TRUE)){ install.packages("CBPS")}
-if(!require(ATE.ncb, quietly = TRUE)){ devtools::install_github("raymondkww/ATE.ncb")}
-if(!require(ACBalancing, quietly = TRUE)){ devtools::install_github("yimindai0521/ACBalancing")}
-
-library(WeightIt)
-library(MASS)
-library(ATE.ncb)
+if (!require(devtools, quietly = TRUE)) {
+  install.packages("devtools")
+}
+if (!require(WeightIt, quietly = TRUE)) {
+  install.packages("WeightIt")
+}
+if (!require(MASS, quietly = TRUE)) {
+  install.packages("MASS")
+}
+if (!require(CBPS, quietly = TRUE)) {
+  install.packages("CBPS")
+}
+if (!require(microbenchmark, quietly = TRUE)) {
+  install.packages("microbenchmark")
+}
+if (!require(cobalt, quietly = TRUE)) {
+  install.packages("cobalt")
+}
+if (!require(ggplot2, quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+if (!require(ATE.ncb, quietly = TRUE)) {
+  devtools::install_github("raymondkww/ATE.ncb")
+}
+if (!require(ACBalancing, quietly = TRUE)) {
+  devtools::install_github("yimindai0521/ACBalancing")
+}
 ```
 
 # Get Started and Interpretation of Parameter
@@ -152,11 +169,28 @@ MB(covariate = data$X, treat = data$treat, group1 = 0, outcome = data$Y, method 
 
 When the sample size = 500, we find that GMIM is quite large, and thus we recommend using something other than the MB method to estimate the average treatment effect. MB method may not approximately balance covariates in the finite sample in very \`\` Bad Overlap" setting. However, when the sample size = 5000, we find that GMIM is relatively small. Therefore, we can use the result produced by the MB method. When the GMIM is relatively small, we recommend using the MB method to estimate the average treatment effect. Our method can handle some \`\` Bad Overlap" settings. However, it cannot solve the situation when it's extreme \`\`Bad Overlap" in a finite sample. GMIM is a balancing measure to judge whether our approach can approximately balance covariates.
 
+# Computational efficiency
+
+```{r}
+library(microbenchmark)
+set.seed(0521)
+data <- si.data()
+microbenchmark::microbenchmark(
+  MB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximalC"),
+  MB(covariate = data$X, treat = data$Tr, group1 = 1, outcome = data$Y, method = "MB", opti.method = "proximal"),
+  times = 10
+)
+```
+We can find that our C++ code highly improves computational efficiency.
+
 # Implementation of other covariate balancing methods
 
 We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit) to implement Mahalanobis balancing method and other covariate balancing methods, including inverse probability weighting (ps) in @rosenbaum1987model, entropy balancing (ebal) in @hainmueller2012entropy, covariate balancing propensity score (cbps) in @imai2014covariate, energy balancing (energy) in @huling2020energy, minimal dispersion approximate balancing weights (UB) in @wang2020minimal, kernel-based covariate balancing (kernel) in @wong2018kernel and hierarchically regularized entropy balancing (HRB) in @xu2021hierarchically.
 
 ```{r}
+library(WeightIt)
+library(MASS)
+library(ATE.ncb)
 covbal <- function(X, Tr, Y, MB.only = FALSE) {
   data.matrix <- data.frame(X, factor(Tr))
   sample.size <- dim(X)[1]
@@ -176,56 +210,58 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
   HRB.ate <- NA
   UB.weight <- rep(NA, sample.size)
   UB.ate <- NA
+
+  if (MB.only == FALSE) {
+    character <- names(data.matrix)
+    for (j in 1:(dimension + 1)) {
+      character[j] <- paste(character[j])
+    }
+    myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
+
+    ps.weight <- rep(NULL, sample.size)
+    ps.ate <- NULL
+    ps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ps")$weights
+    ps.ate <- t(ps.weight[Tr == 1] / sum(ps.weight[Tr == 1])) %*% Y[Tr == 1] - t(ps.weight[Tr == 0] / sum(ps.weight[Tr == 0])) %*% Y[Tr == 0]
+
+    ebal.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ebal")$weights
+    ebal.ate <- t(ebal.weight[Tr == 1] / sum(ebal.weight[Tr == 1])) %*% Y[Tr == 1] - t(ebal.weight[Tr == 0] / sum(ebal.weight[Tr == 0])) %*% Y[Tr == 0]
+    ebal.weight[ebal.weight == 0] <- 1
+
+    cbps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "cbps", over = FALSE)$weights
+    cbps.ate <- t(cbps.weight[Tr == 1] / sum(cbps.weight[Tr == 1])) %*% Y[Tr == 1] - t(cbps.weight[Tr == 0] / sum(cbps.weight[Tr == 0])) %*% Y[Tr == 0]
+
+    energy.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "energy")$weights
+    energy.ate <- t(energy.weight[Tr == 1] / sum(energy.weight[Tr == 1])) %*% Y[Tr == 1] - t(energy.weight[Tr == 0] / sum(energy.weight[Tr == 0])) %*% Y[Tr == 0]
+
+    # Sobolev kernel
+    Xstd <- transform.sob(X)$Xstd # standardize X to [0,1]^p
+    K <- getGram(Xstd) # get Gram matrix using Sobolev kernel
+    nlam <- 20
+    lams <- exp(seq(log(1e-8), log(1), len = nlam))
+
+    # compute weights for T=1 / T=0
+    fit1 <- ATE.ncb.SN(Tr, K, lam1s = lams, traceit = FALSE)
+    if (sum(fit1$warns)) cat("lambda bound warning!\n")
+    fit0 <- ATE.ncb.SN(1 - Tr, K, lam1s = lams, traceit = FALSE)
+    if (sum(fit0$warns)) cat("lambda bound warning!\n")
+    kernel.ate <- mean(fit1$w * Y - fit0$w * Y)
+    kernel.weight <- fit1$w
+    kernel.weight <- kernel.weight + fit0$w
     
-  if(MB.only == FALSE){
-  character <- names(data.matrix)
-  for (j in 1:(dimension + 1)) {
-    character[j] <- paste(character[j])
+    UB.weight <- rep(NA, sample.size)
+    UB1.result <- UB(covariate = X, treat = Tr, group1 = 0, outcome = Y, opti.method = "proximal")
+    UB2.result <- UB(covariate = X, treat = Tr, group1 = 1, outcome = Y, opti.method = "proximal")
+    UB.weight[Tr == 0] <- sum(Tr == 0) * UB1.result$weight
+    UB.weight[Tr == 1] <- sum(Tr == 1) * UB2.result$weight
+    UB.ate <- t(UB.weight[Tr == 1] / sum(UB.weight[Tr == 1])) %*% Y[Tr == 1] - t(UB.weight[Tr == 0] / sum(UB.weight[Tr == 0])) %*% Y[Tr == 0]
+
+    HRB1.result <- HRB(covariate = X, treat = Tr, group1 = 0, outcome = Y)
+    HRB2.result <- HRB(covariate = X, treat = Tr, group1 = 1, outcome = Y)
+    HRB.weight[Tr == 0] <- sum(Tr == 0) * HRB1.result$weight
+    HRB.weight[Tr == 1] <- sum(Tr == 1) * HRB2.result$weight
+    HRB.ate <- t(HRB.weight[Tr == 1] / sum(HRB.weight[Tr == 1])) %*% Y[Tr == 1] - t(HRB.weight[Tr == 0] / sum(HRB.weight[Tr == 0])) %*% Y[Tr == 0]
   }
-  myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
 
-  ps.weight <- rep(NULL, sample.size)
-  ps.ate <- NULL
-  ps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ps")$weights
-  ps.ate <- t(ps.weight[Tr == 1] / sum(ps.weight[Tr == 1])) %*% Y[Tr == 1] - t(ps.weight[Tr == 0] / sum(ps.weight[Tr == 0])) %*% Y[Tr == 0]
-
-  ebal.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "ebal")$weights
-  ebal.ate <- t(ebal.weight[Tr == 1] / sum(ebal.weight[Tr == 1])) %*% Y[Tr == 1] - t(ebal.weight[Tr == 0] / sum(ebal.weight[Tr == 0])) %*% Y[Tr == 0]
-  ebal.weight[ebal.weight == 0] <- 1
-
-  cbps.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "cbps", over = FALSE)$weights
-  cbps.ate <- t(cbps.weight[Tr == 1] / sum(cbps.weight[Tr == 1])) %*% Y[Tr == 1] - t(cbps.weight[Tr == 0] / sum(cbps.weight[Tr == 0])) %*% Y[Tr == 0]
-  
-  energy.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "energy")$weights
-  energy.ate <- t(energy.weight[Tr == 1] / sum(energy.weight[Tr == 1])) %*% Y[Tr == 1] - t(energy.weight[Tr == 0] / sum(energy.weight[Tr == 0])) %*% Y[Tr == 0]
-  
-  # Sobolev kernel
-  Xstd <- transform.sob(X)$Xstd # standardize X to [0,1]^p
-  K <- getGram(Xstd) # get Gram matrix using Sobolev kernel
-  nlam <- 20
-  lams <- exp(seq(log(1e-8), log(1), len = nlam))
-
-  # compute weights for T=1 / T=0
-  fit1 <- ATE.ncb.SN(Tr, K, lam1s = lams, traceit = FALSE)
-  if (sum(fit1$warns)) cat("lambda bound warning!\n")
-  fit0 <- ATE.ncb.SN(1 - Tr, K, lam1s = lams, traceit = FALSE)
-  if (sum(fit0$warns)) cat("lambda bound warning!\n")
-  kernel.ate <- mean(fit1$w * Y - fit0$w * Y)
-  
-  UB.weight <- rep(NA, sample.size)
-  UB1.result <- UB(covariate = X, treat = Tr, group1 = 0, outcome = Y, opti.method = "proximal")
-  UB2.result <- UB(covariate = X, treat = Tr, group1 = 1, outcome = Y, opti.method = "proximal")
-  UB.weight[Tr == 0] <- sum(Tr == 0) * UB1.result$weight
-  UB.weight[Tr == 1] <- sum(Tr == 1) * UB2.result$weight
-  UB.ate <- t(UB.weight[Tr == 1] / sum(UB.weight[Tr == 1])) %*% Y[Tr == 1] - t(UB.weight[Tr == 0] / sum(UB.weight[Tr == 0])) %*% Y[Tr == 0]
-  
-  HRB1.result <- HRB(covariate = X, treat = Tr, group1 = 0, outcome = Y)
-  HRB2.result <- HRB(covariate = X, treat = Tr, group1 = 1, outcome = Y)
-  HRB.weight[Tr == 0] <- sum(Tr == 0) * HRB1.result$weight
-  HRB.weight[Tr == 1] <- sum(Tr == 1) * HRB2.result$weight
-  HRB.ate <- t(HRB.weight[Tr == 1] / sum(HRB.weight[Tr == 1])) %*% Y[Tr == 1] -   t(HRB.weight[Tr == 0] / sum(HRB.weight[Tr == 0])) %*% Y[Tr == 0]
-  }
-  
   MB.weight <- rep(NA, sample.size)
   MB1.result <- MB(covariate = X, treat = Tr, group1 = 0, outcome = rep(0, sample.size), method = "MB", opti.method = "proximalC", rate = 10)
   MB2.result <- MB(covariate = X, treat = Tr, group1 = 1, outcome = rep(0, sample.size), method = "MB", opti.method = "proximalC", rate = 10)
@@ -233,8 +269,52 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
   MB.weight[Tr == 1] <- sum(Tr == 1) * MB2.result$weight
   MB.ate <- t(MB.weight[Tr == 1] / sum(MB.weight[Tr == 1])) %*% Y[Tr == 1] - t(MB.weight[Tr == 0] / sum(MB.weight[Tr == 0])) %*% Y[Tr == 0]
 
-  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight, UB = UB.weight, HRB = HRB.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate, UB = UB.ate, HRB = HRB.ate, kernel = kernel.ate)))
+  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight, UB = UB.weight, HRB = HRB.weight, kernel = kernel.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate, UB = UB.ate, HRB = HRB.ate, kernel = kernel.ate)))
 }
+```
+
+# Evaluation of Covariate Balance using ASMD
+
+Absolute Standardized Mean Difference (ASMD) is causal inference's most common balancing measure. ASMD is calculated as the difference in means of a covariate across the treatment groups divided by the standard deviation in the treated and control groups. ASMD that less than 0.1 or 0.25 represent reasonable cut-offs for acceptable standardized biases. In our method, we recommend using GMIM to evaluate covariate balance. The difference between GMIM and ASMD is that small GMIM can also imply small ASMD; conversely, this is not true. Moreover, GMIM can evaluate the doubly robust property for the weighting estimator, while ASMD cannot. For more details, please check our paper [Mahalanobis balancing: a multivariate perspective on approximate covariate balancing](https://arxiv.org/abs/2204.13439). The code below shows that our method (MB) can guarantee ASMD of less than 0.1 in simulation.
+
+```{r}
+# plot ASMD
+library(cobalt)
+library(ggplot2)
+set.seed(1999)
+data <- si.data()
+dimension <- dim(data$X)[2]
+data.matrix <- data.frame(data$X, factor(data$Tr))
+character <- names(data.matrix)
+for (j in 1:(dimension + 1)) {
+  character[j] <- paste(character[j])
+}
+myformula <- as.formula(paste(character[1 + dimension], paste(" ~ ", paste(character[1:dimension], collapse = "+"))))
+
+result <- covbal(data$X, data$Tr, data$Y)
+plot.ASMD <- love.plot(myformula,
+  data = data.matrix, estimand = "ATE",
+  stats = c("mean.diffs"),
+  weights = list(
+    w1 = result$weight$MB,
+    w2 = result$weight$ps,
+    w3 = result$weight$ebal,
+    w4 = result$weight$cbps,
+    w5 = result$weight$energy,
+    w6 = result$weight$UB,
+    w7 = result$weight$HRB,
+    w8 = result$weight$kernel
+  ),
+  var.order = "unadjusted",
+  abs = TRUE,
+  line = TRUE,
+  thresholds = c(m = .1),
+  sample.names = c("Unweighted", "MB", "PS", "ebal", "cbps", "energy", "UB", "HRB", "kernel"),
+  limits = list(m = c(0, 1.5)),
+  wrap = 20,
+  position = "top"
+)
+plot.ASMD
 ```
 
 # Replication of Simulation
@@ -244,55 +324,69 @@ We consider four different simulation settings.
 The first simulation will be Scenario A in our paper.
 
 ```{r}
-si.data.Wong.Chan <- function(dimension = 10 , sample.size = 200){
-  sample.matrix <- matrix(0,sample.size,dimension+4)
-  for(i in 1:sample.size){  
-    z = mvrnorm(1, mu = rep(0,dimension), Sigma = diag(dimension))
-    sample.matrix[i,1] <- exp(z[1]/2)
-    sample.matrix[i,2] <- z[2]/(exp(z[1])+1)
-    sample.matrix[i,3] <- (z[1]*z[3]+0.6)^(3)
-    sample.matrix[i,4] <- (z[2]+z[4]+20)^2
-    sample.matrix[i,5:dimension] <- z[5:dimension]
-    p                  <- 1/(exp(0.5*z[1]+0.1*z[4])+1)
-    sample.matrix[i,dimension+1] <- rbinom(1,1,p)
-    temp               <- rnorm(1)
-    sample.matrix[i,dimension+2] <- 210 + (1.5*sample.matrix[i,dimension+1]-0.5)*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) + temp
-    sample.matrix[i,dimension+3] <- 210 + 1*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) 
-    sample.matrix[i,dimension+4] <- 210 - 0.5*(13.7*z[1] + 13.7*z[2] + 13.7*z[3] + 13.7*z[4]) 
+si.data.Wong.Chan <- function(dimension = 10, sample.size = 200) {
+  sample.matrix <- matrix(0, sample.size, dimension + 4)
+  for (i in 1:sample.size) {
+    z <- mvrnorm(1, mu = rep(0, dimension), Sigma = diag(dimension))
+    sample.matrix[i, 1] <- exp(z[1] / 2)
+    sample.matrix[i, 2] <- z[2] / (exp(z[1]) + 1)
+    sample.matrix[i, 3] <- (z[1] * z[3] + 0.6)^(3)
+    sample.matrix[i, 4] <- (z[2] + z[4] + 20)^2
+    sample.matrix[i, 5:dimension] <- z[5:dimension]
+    p <- 1 / (exp(0.5 * z[1] + 0.1 * z[4]) + 1)
+    sample.matrix[i, dimension + 1] <- rbinom(1, 1, p)
+    temp <- rnorm(1)
+    sample.matrix[i, dimension + 2] <- 210 + (1.5 * sample.matrix[i, dimension + 1] - 0.5) * (13.7 * z[1] + 13.7 * z[2] + 13.7 * z[3] + 13.7 * z[4]) + temp
+    sample.matrix[i, dimension + 3] <- 210 + 1 * (13.7 * z[1] + 13.7 * z[2] + 13.7 * z[3] + 13.7 * z[4])
+    sample.matrix[i, dimension + 4] <- 210 - 0.5 * (13.7 * z[1] + 13.7 * z[2] + 13.7 * z[3] + 13.7 * z[4])
   }
-  return(list(X = sample.matrix[,1:dimension], treat = sample.matrix[, dimension + 1], Y = sample.matrix[, dimension + 2]))
+  return(list(X = sample.matrix[, 1:dimension], treat = sample.matrix[, dimension + 1], Y = sample.matrix[, dimension + 2]))
 }
 ```
 
-The second simulation will be Scenario B in our paper.
+The second simulation will be Scenario B in our paper. The confounder will be the interaction of $X_i$ and $X_j$ but not $X_i$. 
 
 ```{r}
-si.data.interaction <- function(dimension = 10, sample.size = 200){
-  sample.matrix        <- matrix(0 , sample.size , dimension + (dimension*(dimension+1)/2 + 4))
-  covariance.matrix.A  <- matrix(0 , dimension , dimension)
-  covariance.matrix.B  <- matrix(0 , dimension , dimension)
-  for(i in 1:dimension){for(j in 1:dimension){covariance.matrix.A[i,j] <- 2^{-abs(i!=j)}}}
-  for(i in 1:dimension){for(j in 1:dimension){covariance.matrix.B[i,j] <- 1}}
-  for(i in 1:sample.size){  
-    p  <- rbinom(1,1,0.5)
-    z1 <- mvrnorm(1, mu = rep(1,dimension), Sigma = covariance.matrix.A)
-    z0 <- mvrnorm(1, mu = rep(1,dimension), Sigma = diag(dimension))
-    if(p == 1){z <- z1}
-    if(p == 0){z <- z0} 
-    sample.matrix[i,1:dimension] <- z
-    for(f in 1:dimension){
-      for(k in 1:f){
-        sample.matrix[i,dimension + f*(f-1)/2 + k] <- z[k]*z[f]
+si.data.interaction <- function(dimension = 10, sample.size = 200) {
+  sample.matrix <- matrix(0, sample.size, dimension + (dimension * (dimension + 1) / 2 + 4))
+  covariance.matrix.A <- matrix(0, dimension, dimension)
+  covariance.matrix.B <- matrix(0, dimension, dimension)
+  for (i in 1:dimension) {
+    for (j in 1:dimension) {
+      covariance.matrix.A[i, j] <- 2^{
+        -abs(i != j)
       }
     }
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 1)] <- p
-    temp <- rnorm(1)
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] <- 2 * sum(z) + 2*(z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[1])
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)] <- 1 * sum(z) + (z[1]*z[2]+z[2]*z[3]+z[3]*z[4]+z[4]*z[5]+z[5]*z[6]+z[6]*z[7]+z[7]*z[8]+z[8]*z[9]+z[9]*z[10]+z[10]*z[1])
-    sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 2)] <- p *   sample.matrix[i,(dimension + dimension*(dimension+1)/2 + 3)] + (1 - p) * sample.matrix[i,dimension + (dimension*(dimension+1)/2 + 4)] + temp
   }
-  true_Y <- mean(sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 3)] - sample.matrix[i,dimension + (dimension*(dimension+1)/2  + 4)])
-  return(list(X = sample.matrix[, 1:(dimension + dimension*(dimension+1)/2)], treat = sample.matrix[, dimension + (dimension*(dimension+1)/2 + 1)], Y = sample.matrix[, dimension*(dimension+1)/2 + 2], true_Y = true_Y))
+  for (i in 1:dimension) {
+    for (j in 1:dimension) {
+      covariance.matrix.B[i, j] <- 1
+    }
+  }
+  for (i in 1:sample.size) {
+    p <- rbinom(1, 1, 0.5)
+    z1 <- mvrnorm(1, mu = rep(1, dimension), Sigma = covariance.matrix.A)
+    z0 <- mvrnorm(1, mu = rep(1, dimension), Sigma = diag(dimension))
+    if (p == 1) {
+      z <- z1
+    }
+    if (p == 0) {
+      z <- z0
+    }
+    sample.matrix[i, 1:dimension] <- z
+    for (f in 1:dimension) {
+      for (k in 1:f) {
+        sample.matrix[i, dimension + f * (f - 1) / 2 + k] <- z[k] * z[f]
+      }
+    }
+    sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 1)] <- p
+    temp <- rnorm(1)
+    sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 3)] <- 2 * sum(z) + 2 * (z[1] * z[2] + z[2] * z[3] + z[3] * z[4] + z[4] * z[5] + z[5] * z[6] + z[6] * z[7] + z[7] * z[8] + z[8] * z[9] + z[9] * z[10] + z[10] * z[1])
+    sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 4)] <- 1 * sum(z) + (z[1] * z[2] + z[2] * z[3] + z[3] * z[4] + z[4] * z[5] + z[5] * z[6] + z[6] * z[7] + z[7] * z[8] + z[8] * z[9] + z[9] * z[10] + z[10] * z[1])
+    sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 2)] <- p * sample.matrix[i, (dimension + dimension * (dimension + 1) / 2 + 3)] + (1 - p) * sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 4)] + temp
+  }
+  true_Y <- mean(sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 3)] - sample.matrix[i, dimension + (dimension * (dimension + 1) / 2 + 4)])
+  return(list(X = sample.matrix[, 1:(dimension + dimension * (dimension + 1) / 2)], treat = sample.matrix[, dimension + (dimension * (dimension + 1) / 2 + 1)], Y = sample.matrix[, dimension * (dimension + 1) / 2 + 2], true_Y = true_Y))
 }
 ```
 
@@ -351,7 +445,14 @@ mainf1 <- function(iteration = 1000) {
 }
 
 set.seed(1124)
-mainf1(1)
+result <- mainf1(1)
+
+data <- data.frame(wong.chan = result$Wong.Chan.bias, interaction = result$si.data.interaction.bias, extreme.mean = result$extreme.mean.diff.bias, extreme_sample_size = result$extreme_sample_size.bias, method = c("ps", "ebal", "CBPS", "energy", "MB", "UB", "HRB", "kernel"))
+
+ggplot(data, aes(x = method, y = wong.chan)) + geom_point(size = 3) + labs(y = "bias", x = "method", title = "wong chan simulation result")
+ggplot(data, aes(x = method, y = interaction)) + geom_point(size = 3) + labs(y = "bias", x = "method", title = "interaction simulation result")
+ggplot(data, aes(x = method, y = extreme.mean)) + geom_point(size = 3) + labs(y = "bias", x = "method", title = "extreme.mean.diff.bias simulation result")
+ggplot(data, aes(x = method, y = extreme_sample_size)) + geom_point(size = 3) + labs(y = "bias", x = "method", title = "extreme_sample_size simulation result")
 ```
 
 # References

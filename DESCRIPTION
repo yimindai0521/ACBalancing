@@ -20,7 +20,9 @@ Suggests:
     MASS,
     ATE.ncb,
     CBPS,
-    devtools
+    devtools,
+    cobalt,
+    microbenchmark
 VignetteBuilder: knitr
 RoxygenNote: 7.2.2
 LinkingTo: 
