@@ -43,11 +43,11 @@ CholMB <- function(covariate, treat, group1, group2 = NA, method = "MB") {
 
   mean.target <- matrix(NA, 1, dimension)
   if (is.null(group2)) {
-      mean.target <- colMeans(covariate)
-      covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
+    mean.target <- colMeans(covariate)
+    covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
   } else {
-      mean.target <- colMeans(covariate[treat == group2, ])
-      covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
+    mean.target <- colMeans(covariate[treat == group2, ])
+    covariate.group1 <- covariate.group1 - matrix(mean.target, nrow(covariate.group1), dimension, byrow = T)
   }
 
   K <- solve(group.cov)

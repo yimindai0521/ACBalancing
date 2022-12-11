@@ -66,7 +66,7 @@ HRB <- function(covariate, treat, group1, group2 = NULL, outcome,
     new_covariate <- cbind(new_covariate, covariate^2)
   }
   if (interact == TRUE) {
-    for(k in 1:ncol(covariate)){
+    for (k in 1:ncol(covariate)) {
       new_covariate <- cbind(new_covariate, covariate[, k] * covariate[, (1:ncol(covariate) > k)])
     }
   }

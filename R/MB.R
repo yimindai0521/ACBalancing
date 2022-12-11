@@ -96,7 +96,7 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
   # Check the compatibility of group1/group2 and treat
   try(if (length(group1) > 1) stop("the length of group1 should be one!"))
   try(if (sum(treat == group1) == 0) stop("the sample size of treat = group1 is zero!"))
-  if(!is.null(group2)){
+  if (!is.null(group2)) {
     try(if (sum(treat == group2) == 0) stop("the sample size of treat = group2 is zero!"))
   }
 
@@ -157,7 +157,7 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
 
     # Implementation of proximal optimization method with R code
     if (opti.method == "proximal") {
-      iterationtime = 0 # Initiazing iteration time
+      iterationtime <- 0 # Initiazing iteration time
       while (eps > convergence) {
         beta_old <- beta # Save beta before iteration
         hessian <- solve(crossprod(t(x), t(x) * matrix(exp(crossprod(x, beta_old)), ncol(x), nrow(x))) + rate * diag(rep(1, nrow(x)))) # Calculate modified Hessian Newton update with parameter lambda > 0
@@ -167,8 +167,8 @@ MB <- function(covariate, treat, group1, group2 = NULL, outcome, opti.method = c
         fobj_new <- sum(exp(t(x) %*% beta)) + delta.space[i] * sqrt(sum(beta^2)) # Calculate the value of loss function with beta
         eps <- abs(fobj_old - fobj_new) # Calculate the difference of the value
         iterationtime <- iterationtime + 1
-        if(iterationtime >= iterations){
-          eps = 0 # If the iterationtime is greater /equal to iterations, then stop optimization
+        if (iterationtime >= iterations) {
+          eps <- 0 # If the iterationtime is greater /equal to iterations, then stop optimization
         }
       }
     }
