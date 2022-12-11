@@ -65,9 +65,7 @@ ridge penalties with a hierarchical structure on the higher-order terms.</p>
   <span class="va">outcome</span>,
   alpha.space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.05</span>, <span class="fl">0.01</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span><span class="op">)</span>,
   iterations <span class="op">=</span> <span class="fl">1000</span>,
-  convergence <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="op">{</span>
-     <span class="op">-</span><span class="fl">10</span>
- <span class="op">}</span>,
+  convergence <span class="op">=</span> <span class="fl">1e-08</span>,
   cv.fold <span class="op">=</span> <span class="fl">5</span>,
   second.moment <span class="op">=</span> <span class="cn">TRUE</span>,
   third.moment <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -136,6 +134,14 @@ candidate values for the degree of the strength of penalty.</p></dd>
 <li><p>MAE: Mean Absolute Error.</p></li>
 <li><p>alpha: the tuning parameter we choose.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Xu, Y., &amp; Yang, E. (2021). Hierarchically Regularized Entropy Balancing.
+<em>Political Analysis</em>
+<strong>forthcoming</strong>,
+doi: <a href="https://doi.org/10.2139/ssrn.3807620" class="external-link">10.2139/ssrn.3807620</a>
+.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
