@@ -51,3 +51,13 @@ result5$GMIM + result6$GMIM # Generalized Mahalanobis Imbalance Measure for Hier
 ```
 
 For more details, please check vignettes.
+
+## Reference
+
+Dai, Y., & Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.
+
+Wang, Y., & Zubizarreta, J. R. (2020). Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations. Biometrika, 107(1), 93-105.
+
+
+Xu, Y., & Yang, E. (2021). Hierarchically Regularized Entropy Balancing. Available at SSRN 3807620.
+
