@@ -3,5 +3,8 @@ pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   package_intro: package_intro.html
-last_built: 2022-12-12T02:07Z
+last_built: 2022-12-12T02:42Z
+urls:
+  reference: https://yimindai0521.github.io/ACBalancing/reference
+  article: https://yimindai0521.github.io/ACBalancing/articles
 
