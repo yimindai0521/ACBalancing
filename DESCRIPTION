@@ -17,16 +17,17 @@ Suggests:
     rmarkdown,
     ggplot2,
     WeightIt,
-    MASS,
     ATE.ncb,
     CBPS,
-    devtools,
-    cobalt,
-    microbenchmark
+    cobalt
 VignetteBuilder: knitr
 RoxygenNote: 7.2.2
 LinkingTo: 
     Rcpp,
     RcppArmadillo
 Imports: 
-    Rcpp
+    Rcpp,
+    stats,
+    MASS,
+    devtools,
+    microbenchmark
