@@ -8,8 +8,7 @@ An R package for Approximate Covariate Balancing.
 
 ## Overview
 
-The R package ACBalancing implements several approximate balancing methods, such as the univariate approximate balancing method in [Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations](https://doi.org/10.1093/biomet/asz050), the Mahalanobis balancing method in [Mahalanobis balancing: a multivariate perspective on approximate covariate balancing](https://arxiv.org/abs/2204.13439), and the hierarchically regularized entropy balancing method in [Hierarchically Regularized Entropy Balancing](http://dx.doi.org/10.2139/ssrn.3807620), for estimating average treatment effects (ATE) or average treatment effects in controlled or treated groups (ATC or ATT). It includes Mahalanobis balancing and high-dimensional Mahalanobis balancing method.
-
+The R package ACBalancing implements several approximate balancing methods, such as the univariate approximate balancing method in [Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations](https://doi.org/10.1093/biomet/asz050), the Mahalanobis balancing method in [Mahalanobis balancing: a multivariate perspective on approximate covariate balancing](https://arxiv.org/abs/2204.13439), and the hierarchically regularized entropy balancing method in [Hierarchically Regularized Entropy Balancing](http://dx.doi.org/10.2139/ssrn.3807620), for estimating average treatment effects (ATE) or average treatment effects in controlled or treated groups (ATC or ATT).
 ## Installation
 
 You can install the development version of ACBalancing from [GitHub](https://github.com/) with:
@@ -51,4 +50,4 @@ result3$GMIM + result4$GMIM # Generalized Mahalanobis Imbalance Measure for Univ
 result5$GMIM + result6$GMIM # Generalized Mahalanobis Imbalance Measure for Hierarchically Regularized Entropy Balancing weights
 ```
 
-For more details, please check website: https://yimindai0521.github.io/ACBalancing.
+For more details, please check vignettes.
