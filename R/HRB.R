@@ -4,6 +4,24 @@
 #' higher-order terms of covariates while imposes
 #' ridge penalties with a hierarchical structure on the higher-order terms.
 #'
+#' @details
+#' \code{group1} and \code{group0}
+#' \itemize{
+#' \item group1 and group0 are not continuous.
+#'
+#' \item To estimate \eqn{E(Y (1))} (average treatment effect for group 1),
+#' you need to set \code{group1} = 1 and ignore \code{group2}. Similarly,
+#' To estimate \eqn{E(Y (0))} (average treatment effect for group 0),
+#' you need to set \code{group1} = 0 and ignore \code{group2}.
+#'
+#' \item To estimate average treatment effect on the control group \eqn{E(Y (1) | T = 0)},
+#' you need to set \code{group1} = 1 and \code{group2} = 0. Similarly, To estimate
+#' average treatment effect on the treated group \eqn{E(Y (0) | T = 1)},
+#' you need to set \code{group1} = 0 and \code{group2} = 1.
+#'
+#' \item This function is feasible when there are more than two groups.
+#' }
+#'
 #' @inheritParams MB
 #'
 #' @param alpha.space alpha.space is grid of values for the tuning parameter, a vector of

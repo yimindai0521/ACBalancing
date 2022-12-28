@@ -96,9 +96,6 @@ if (!require(cobalt, quietly = TRUE)) {
 if (!require(ggplot2, quietly = TRUE)) {
   install.packages("ggplot2")
 }
-if (!require(ATE.ncb, quietly = TRUE)) {
-  devtools::install_github("raymondkww/ATE.ncb")
-}
 if (!require(ACBalancing, quietly = TRUE)) {
   devtools::install_github("yimindai0521/ACBalancing")
 }
@@ -191,7 +188,6 @@ We provide function `covbal` (using R package `Weightit` @Gerifer2022Weightit) t
 ```{r}
 library(WeightIt)
 library(MASS)
-library(ATE.ncb)
 covbal <- function(X, Tr, Y, MB.only = FALSE) {
   data.matrix <- data.frame(X, factor(Tr))
   sample.size <- dim(X)[1]
@@ -206,8 +202,6 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
   cbps.ate <- NA
   energy.weight <- rep(NA, sample.size)
   energy.ate <- NA
-  kernel.weight <- rep(NA, sample.size)
-  kernel.ate <- NA
   HRB.weight <- rep(NA, sample.size)
   HRB.ate <- NA
   UB.weight <- rep(NA, sample.size)
@@ -239,20 +233,7 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
     # energy balancing
     energy.weight <- weightit(myformula, data = data.matrix, estimand = "ATE", method = "energy")$weights
     energy.ate <- t(energy.weight[Tr == 1] / sum(energy.weight[Tr == 1])) %*% Y[Tr == 1] - t(energy.weight[Tr == 0] / sum(energy.weight[Tr == 0])) %*% Y[Tr == 0]
-
-    # kernel-based covariate balancing
-    Xstd <- transform.sob(X)$Xstd # standardize X to [0,1]^p
-    K <- getGram(Xstd) # get Gram matrix using Sobolev kernel
-    nlam <- 20
-    lams <- exp(seq(log(1e-8), log(1), len = nlam))
-    fit1 <- ATE.ncb.SN(Tr, K, lam1s = lams, traceit = FALSE) # compute weights for T=1
-    if (sum(fit1$warns)) cat("lambda bound warning!\n")
-    fit0 <- ATE.ncb.SN(1 - Tr, K, lam1s = lams, traceit = FALSE) # compute weights for T=1
-    if (sum(fit0$warns)) cat("lambda bound warning!\n")
-    kernel.ate <- mean(fit1$w * Y - fit0$w * Y)
-    kernel.weight <- fit1$w
-    kernel.weight <- kernel.weight + fit0$w
-
+    
     # univariate balancing
     UB.weight <- rep(NA, sample.size)
     UB1.result <- UB(covariate = X, treat = Tr, group1 = 0, outcome = Y, opti.method = "proximal")
@@ -277,7 +258,7 @@ covbal <- function(X, Tr, Y, MB.only = FALSE) {
   MB.weight[Tr == 1] <- sum(Tr == 1) * MB2.result$weight
   MB.ate <- t(MB.weight[Tr == 1] / sum(MB.weight[Tr == 1])) %*% Y[Tr == 1] - t(MB.weight[Tr == 0] / sum(MB.weight[Tr == 0])) %*% Y[Tr == 0]
 
-  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight, UB = UB.weight, HRB = HRB.weight, kernel = kernel.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate, UB = UB.ate, HRB = HRB.ate, kernel = kernel.ate)))
+  return(list(weight = list(ps = ps.weight, ebal = ebal.weight, cbps = cbps.weight, energy = energy.weight, MB = MB.weight, UB = UB.weight, HRB = HRB.weight), ate = c(ps = ps.ate, ebal = ebal.ate, cbps = cbps.ate, energy = energy.ate, MB = MB.ate, UB = UB.ate, HRB = HRB.ate)))
 }
 ```
 
@@ -311,14 +292,13 @@ plot.ASMD <- love.plot(myformula,
     w4 = result$weight$cbps,
     w5 = result$weight$energy,
     w6 = result$weight$UB,
-    w7 = result$weight$HRB,
-    w8 = result$weight$kernel
+    w7 = result$weight$HRB
   ),
   var.order = "unadjusted",
   abs = TRUE,
   line = TRUE,
   thresholds = c(m = .1),
-  sample.names = c("Unweighted", "MB", "PS", "ebal", "cbps", "energy", "UB", "HRB", "kernel"),
+  sample.names = c("Unweighted", "MB", "PS", "ebal", "cbps", "energy", "UB", "HRB"),
   limits = list(m = c(0, 1.5)),
   wrap = 20,
   position = "top"
@@ -434,10 +414,10 @@ We repeat 1 time. If you want to simulate more times, please modify `mainf1(1)` 
 
 ```{r, message=FALSE, warning=FALSE}
 mainf1 <- function(iteration = 1000) {
-  result1 <- matrix(0, iteration, 8)
-  result2 <- matrix(0, iteration, 8)
-  result3 <- matrix(0, iteration, 8)
-  result4 <- matrix(0, iteration, 8)
+  result1 <- matrix(0, iteration, 7)
+  result2 <- matrix(0, iteration, 7)
+  result3 <- matrix(0, iteration, 7)
+  result4 <- matrix(0, iteration, 7)
   data2Y <- rep(NA, iteration)
   for (i in 1:iteration) {
     data1 <- si.data.Wong.Chan()
@@ -456,7 +436,7 @@ mainf1 <- function(iteration = 1000) {
 set.seed(1124)
 result <- mainf1(1)
 
-data <- data.frame(wong.chan = result$Wong.Chan.bias, interaction = result$si.data.interaction.bias, extreme.mean = result$extreme.mean.diff.bias, extreme_sample_size = result$extreme_sample_size.bias, method = c("ps", "ebal", "CBPS", "energy", "MB", "UB", "HRB", "kernel"))
+data <- data.frame(wong.chan = result$Wong.Chan.bias, interaction = result$si.data.interaction.bias, extreme.mean = result$extreme.mean.diff.bias, extreme_sample_size = result$extreme_sample_size.bias, method = c("ps", "ebal", "CBPS", "energy", "MB", "UB", "HRB"))
 
 ggplot(data, aes(x = method, y = wong.chan)) +
   geom_point(size = 3) +

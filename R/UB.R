@@ -6,6 +6,8 @@
 #' @details
 #' \code{group1} and \code{group0}
 #' \itemize{
+#' \item group1 and group0 are not continuous.
+#'
 #' \item To estimate \eqn{E(Y (1))} (average treatment effect for group 1),
 #' you need to set \code{group1} = 1 and ignore \code{group2}. Similarly,
 #' To estimate \eqn{E(Y (0))} (average treatment effect for group 0),
