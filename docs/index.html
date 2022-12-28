@@ -30,7 +30,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">ACBalancing</a>
 
@@ -84,7 +84,7 @@
 <div class="section level2">
 <h2 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a>
 </h2>
-<p>We illustrate the usage of MBalance package using simple datasets.</p>
+<p>We illustrate the usage of ACBalancing package using simple datasets.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">0521</span><span class="op">)</span>
 <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/si.data.html">si.data</a></span><span class="op">(</span><span class="op">)</span>
@@ -110,6 +110,13 @@
 <span class="va">result3</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result4</span><span class="op">$</span><span class="va">GMIM</span> <span class="co"># Generalized Mahalanobis Imbalance Measure for Univariate Balancing weights</span>
 <span class="va">result5</span><span class="op">$</span><span class="va">GMIM</span> <span class="op">+</span> <span class="va">result6</span><span class="op">$</span><span class="va">GMIM</span> <span class="co"># Generalized Mahalanobis Imbalance Measure for Hierarchically Regularized Entropy Balancing weights</span></code></pre></div>
 <p>For more details, please check vignettes.</p>
+</div>
+<div class="section level2">
+<h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h2>
+<p>Dai, Y., &amp; Yan, Y. (2022). Mahalanobis balancing: a multivariate perspective on approximate covariate balancing. arXiv preprint arXiv:2204.13439.</p>
+<p>Wang, Y., &amp; Zubizarreta, J. R. (2020). Minimal dispersion approximately balancing weights: asymptotic properties and practical considerations. Biometrika, 107(1), 93-105.</p>
+<p>Xu, Y., &amp; Yang, E. (2021). Hierarchically Regularized Entropy Balancing. Available at SSRN 3807620.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
