@@ -22,7 +22,7 @@ devtools::install_github("yimindai0521/ACBalancing")
 
 ## Usage Examples
 
-We illustrate the usage of MBalance package using simple datasets.
+We illustrate the usage of ACBalancing package using simple datasets.
 
 ``` r
 set.seed(0521)

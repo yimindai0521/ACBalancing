@@ -17,7 +17,6 @@ Suggests:
     rmarkdown,
     ggplot2,
     WeightIt,
-    ATE.ncb,
     CBPS,
     cobalt
 VignetteBuilder: knitr
